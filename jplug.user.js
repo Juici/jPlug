@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        jPlug
+// @name        jPlug Loader
 // @namespace   github.com/Juici/jPlug
 // @author      Juici
 // @version     0.1.0
