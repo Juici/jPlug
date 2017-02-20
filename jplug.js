@@ -200,11 +200,11 @@ window.jplug = {
     },
     woot: function() {
       if (API.getDJ() && (API.getDJ().id != API.getUser().id))
-        document.getElementById('woot').click();
+        $'woot').click();
     },
     meh: function() {
       if (API.getDJ() && (API.getDJ().id != API.getUser().id))
-        document.getElementById('meh').click();
+        $'meh').click();
     },
     getWoots: function () {
       return API.getUsers().filter(u => u.vote == 1);
@@ -563,15 +563,11 @@ window.jplug = {
 
   __rcsMehList: function () {
     // show rcs meh list
-    const rcsMehs = document.getElementById('meh-rs-list');
-    if (rcsMehs) {
-      rcsMehs.innerHTML = '';
+    if ($('meh-rs-list').size() > 0) {
+      $('meh-rs-list').html('');
       API.getUsers().forEach((u) => {
         if (u.vote == -1) {
-          let el = document.createElement('p');
-          el.setAttribute('id', u.id);
-          el.textContent = u.username;
-          rcsMehs.appendChild(el);
+          $('meh-rs-list').append($(`<p id="${u.id}"></p>`).text(u.username));
         }
       });
     }
