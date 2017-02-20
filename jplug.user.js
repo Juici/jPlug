@@ -48,7 +48,7 @@
     load: function () {
       console.log('[jPlug] autoload enabled');
       API.chatLog('jPlug autoload enabled');
-      $.getScript('https://juici.github.io/jPlug/jplug.min.js').fail((e) => console.log(`[jPlug] autoload failed: ${e}`));
+      $.getScript('https://juici.github.io/jPlug/jplug.js').fail((e) => console.log(`[jPlug] autoload failed: ${e}`));
     }
   };
 })(window.jQuery);
