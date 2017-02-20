@@ -33,6 +33,7 @@
 // @exclude     https://*.plug.dj/subscribe
 
 // @grant       none
+// @noframes
 // ==/UserScript==
 
 (function () {
