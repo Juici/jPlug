@@ -78,7 +78,7 @@ window.jplug = {
       songAvailability: true, // TODO
       deletedChat: true
     },
-    debug: false,
+    debug: true,
     custom: {
       sounds: {
         // TODO
@@ -125,13 +125,16 @@ window.jplug = {
 
   utils: {
     _sandboxDocument: null,
-    striphtml: function (text) {
+    htmlentities: function (text) {
       let doc = jplug.utils._sandboxDocument;
       if (!doc || typeof doc === 'undefined' || doc === null)
         doc = jplug.utils._sandboxDocument = document.implementation.createHTMLDocument('jplug-sandbox');
       const tmp = doc.createElement('div');
       tmp.innerHTML = text;
       return tmp.textContent || tmp.text || tmp.innerText || '';
+    },
+    striphtml: function (text) {
+      return text.replace(/<.*?>.*?<\/.*?>/gi, '');
     },
     debug: function (log, error) {
       if (jplug.settings.debug) {
@@ -449,8 +452,6 @@ window.jplug = {
 
     jplug.utils.debug('[init] Loading script...');
 
-    const user = API.getUser();
-
     try {
       if (!jplug.running) {
         jplug.utils.debug('[init] Loading listeners...');
@@ -494,7 +495,7 @@ window.jplug = {
                 }
               }
             } catch (err) {
-                console.error(err, id);
+              console.error(err, id);
             }
         };
 
@@ -575,7 +576,7 @@ window.jplug = {
   },
 
   __autoRespond: function (chat) {
-    chat.message = decodeEntities(chat.message);
+    chat.message = jplug.utils.htmlentities(chat.message);
     chat.message = chat.message.trim();
 
     // username
