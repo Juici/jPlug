@@ -33,7 +33,6 @@
 // @exclude     https://*.plug.dj/subscribe
 
 // @grant       none
-// @run-at      document-start
 // ==/UserScript==
 
 (function ($) {
@@ -42,13 +41,13 @@
       if (typeof API !== 'undefined' && API.enabled) {
         this.load();
       } else {
-        setTimeout(this.hook, 500);
+        setTimeout(() => loader.hook(), 500);
       }
     },
     load: function () {
       console.log('[jPlug] autoload enabled');
       API.chatLog('jPlug autoload enabled');
-      $.getScript('https://juici.github.io/jPlug/jplug.js').fail((e) => console.log(`[jPlug] autoload failed: ${e}`));
+      $.getScript('https://juici.github.io/jPlug/jplug.js').fail((e) => console.error(`[jPlug] autoload failed: ${e}`));
     }
   };
   loader.hook();
