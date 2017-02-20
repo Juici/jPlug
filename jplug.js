@@ -200,12 +200,12 @@ window.jplug = {
       }
     },
     woot: function() {
-      if (API.getDJ() && (API.getDJ().id != API.getUser().id))
-        $'woot').click();
+      if (API.getDJ() && (API.getDJ().id !== API.getUser().id))
+        $('woot').click();
     },
     meh: function() {
-      if (API.getDJ() && (API.getDJ().id != API.getUser().id))
-        $'meh').click();
+      if (API.getDJ() && (API.getDJ().id !== API.getUser().id))
+        $('meh').click();
     },
     getWoots: function () {
       return API.getUsers().filter(u => u.vote == 1);
