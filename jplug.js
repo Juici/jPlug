@@ -167,6 +167,7 @@ window.jplug = {
           jplug.utils.debug('[checkLoad] Loaded');
         }
       };
+      loader.hook();
     },
     getFiles: function (callback) {
       callback = callback || function () {};

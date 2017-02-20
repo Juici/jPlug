@@ -51,4 +51,5 @@
       $.getScript('https://juici.github.io/jPlug/jplug.js').fail((e) => console.log(`[jPlug] autoload failed: ${e}`));
     }
   };
+  loader.hook();
 })(window.jQuery);
