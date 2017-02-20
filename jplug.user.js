@@ -39,9 +39,9 @@
   const loader = {
     hook: function () {
       if (typeof API !== 'undefined' && API.enabled) {
-        loader.load();
+        this.load();
       } else {
-        setTimeout(() => loader.hook(), 500);
+        setTimeout(() => { loader.hook() }, 500);
       }
     },
     load: function () {
