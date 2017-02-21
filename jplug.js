@@ -487,7 +487,7 @@ window.jplug = {
           try {
             this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
             var msg = this.$(`.cid-${id}`).closest('.cm');
-            if (jplug.settings.deletedChat && jplug.running && rcs.running && !(rcs.settings.deletedChat && (2 <= rcs.__getPermission(API.getUser().id) || 7 <= rcs.Utils.getSpecialRank(API.getUser().id)))) {
+            if ((jplug.settings.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
               if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
                 var contents = msg.find(`.contents.cid-${id}`);
                 contents.addClass('rcs-deleted-message');
