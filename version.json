@@ -4,5 +4,5 @@
     "minor": 1,
     "patch": 7
   },
-  "notes": "timed query to override caching"
+  "notes": "fix deleted messages"
 }

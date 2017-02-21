@@ -139,7 +139,7 @@ window.jplug = {
     debug: function (log, error) {
       if (jplug.settings.debug) {
         if ($('#jplug-dev-log').size() === 0) {
-          $('#playback').after(`<div id="jplug-dev-log" style="position:absolute; top:${$('.app-header').height() + 20}px; left:20px; width:200px; max-height: 600px; overflow-y:auto; padding:10px; color: #fff; background-color:rgba(20,20,20,.8); font-size:12px; text-align:left; z-index:100000"><strong>jPlug Dev Log</strong></div>`);
+          $('#playback').after(`<div id="jplug-dev-log" style="position:absolute; top:${$('.app-header').height() + 20}px; left:20px; width:250px; max-height: 600px; overflow-y:auto; padding:10px; color: #fff; background-color:rgba(20,20,20,.8); font-size:12px; text-align:left; z-index:100000"><strong>jPlug Dev Log</strong></div>`);
         }
         typeof log !== 'undefined' && log !== null && (console.log('[jPlug]', log), $('#jplug-dev-log').append(`<div>${log}</div>`));
         typeof error !== 'undefined' && error !== null && (console.error('[jPlug]', error), $('#jplug-dev-log').append(`<div style="color: #c42e3b;">${error}</div>`));
@@ -245,12 +245,14 @@ window.jplug = {
       const timestamp = jplug.utils.getTimeStamp();
       // TODO: use own styling rather than rcs
       $('#chat-messages').append(`<div class="cm message jplug-log rsshit rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="rs-chat-title">${title}</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      rcs.Utils.scrollChat('chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
     },
     rawLogSmall: function (type, badge, message) {
       const id = `jplug-${Date.now()}`;
       const timestamp = jplug.utils.getTimeStamp();
       $('#chat-messages').append(`<div class="cm message jplug-log rsshit sml rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      rcs.Utils.scrollChat('chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
     }
   },
@@ -472,40 +474,32 @@ window.jplug = {
         // TODO: add settings menu
         jplug.utils.debug('[init] UI content added');
 
+        // override rcs deleted chat
         _$context._events['chat:delete'][0].callback = function (id) {
-            try {
-              if (this.lastText && this.lastText.hasClass(`cid-${id}`)) {
-                this.lastID = this.lastType = this.lastText = this.lastTime = void 0;
-              }
-              const element = this.$(`cid-${id}`).closest('.cm');
-              if (jplug.settings.mod.deletedChat && jplug.running) {
-                let msg = element.find(`.contents.cid-${id}`);
-                msg.addClass('jplug-deleted-message');
-                msg.find('.jplug-small-delete').remove();
-                msg = element.find('.text');
-                const del = msg.find('.jplug-deleted-message');
-                if (msg.children().length === del.length) {
-                  element.addClass('jplug-deleted-message');
-                  msg.children().removeClass('jplug-deleted-message');
-                }
+          try {
+            this.lastText && this.lastText.hasClass(`cid-${id}`)) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
+            var element = this.$(`.cid-${id}`).closest('.cm');
+            if (jplug.settings.deletedChat && jplug.running && rcs.running !(rcs.settings.deletedChat && (2 <= rcs.__getPermission(API.getUser().id) || 7 <= rcs.Utils.getSpecialRank(API.getUser().id)))) {
+              if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
+                var $timer = element.find(`.contents.cid-${id}`);
+                $timer.addClass('rcs-deleted-message');
+                $timer.find('.rcs-small-delete').remove();
+                var list = element.find('.text'), head = list.find('.rcs-deleted-message');
+                list.children().length === head.length && (element.addClass('rcs-deleted-message'),
+                list.children().removeClass('rcs-deleted-message'));
               } else {
-                if (jplug.running) {
-                  let msg = element.find('.contents.cid-' + id);
-                  msg.remove();
-                  msg = element.find('.text');
-                  const del = msg.find('.jplug-deleted-message');
-                  if (msg.children().length === del.length) {
-                    element.find('*').off();
-                    element.empty().remove();
-                  }
-                } else {
-                  element.find('*').off();
-                  element.empty().remove();
-                }
+                element.addClass('rcs-deleted-message'), jplug.settings.hideDeleted && element.addClass('text-hidden'),
+                rcs.Utils.hideButton(id);
               }
-            } catch (err) {
-              console.error(err, id);
+            } else {
+              rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat ? ($timer = element.find(`.contents.cid-${id}`),
+              $timer.remove(), list = element.find('.text'), head = list.find('.rcs-deleted-message'),
+              list.children().length === head.length && (element.find('*').off(),
+              element.empty().remove())) : (element.find('*').off(), element.empty().remove());
             }
+          } catch (err) {
+            console.error(err, id);
+          }
         };
 
         jplug.running = true;
@@ -542,7 +536,7 @@ window.jplug = {
         jplug.utils.saveSettings();
         jplug.running = false;
 
-        $('#chat-messages').find('.jplug-deleted-message').remove();
+        // $('#chat-messages').find('.jplug-deleted-message').remove(); // TODO: maybe use own handling for deleted msgs hmm?
         $('.cm.jplug-log').remove();
 
         $('[id^="jplug-"]').off('click').remove();
@@ -552,7 +546,7 @@ window.jplug = {
             if (this.lastText && this.lastText.hasClass(`cid-${id}`)) {
               this.lastID = this.lastType = this.lastText = this.lastTime = void 0;
             }
-            var table = this.$(`cid-${id}`).closest('.cm');
+            var table = this.$(`.cid-${id}`).closest('.cm');
             table.find('*').off();
             table.empty().remove();
           } catch (err) {
