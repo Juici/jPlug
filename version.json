@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 1,
-    "patch": 5
+    "patch": 6
   },
-  "notes": "wait for rcs before load"
+  "notes": "fix debug log"
 }

@@ -138,11 +138,11 @@ window.jplug = {
     },
     debug: function (log, error) {
       if (jplug.settings.debug) {
-        if ($('jplug-dev-log').size() === 0) {
-          $('#playback').after(`<div id="jplug-dev-log" style="position:absolute; top:"${$('.app-header').height() + 20}px; left:20px; width:200px; max-height: 600px; overflow-y:auto; padding:10px; color: #fff; background-color:rgba(20,20,20,.8); font-size:12px; text-align:left; z-index:100000"><strong>jPlug Dev Log</strong></div>`);
+        if ($('#jplug-dev-log').size() === 0) {
+          $('#playback').after(`<div id="jplug-dev-log" style="position:absolute; top:${$('.app-header').height() + 20}px; left:20px; width:200px; max-height: 600px; overflow-y:auto; padding:10px; color: #fff; background-color:rgba(20,20,20,.8); font-size:12px; text-align:left; z-index:100000"><strong>jPlug Dev Log</strong></div>`);
         }
-        typeof log !== 'undefined' && log !== null && (console.log('[jPlug]', log), $('jplug-dev-log').append(`<div>${log}</div>`));
-        typeof error !== 'undefined' && error !== null && (console.error('[jPlug]', error), $('jplug-dev-log').append(`<div style="color: #c42e3b;">${error}</div>`));
+        typeof log !== 'undefined' && log !== null && (console.log('[jPlug]', log), $('#jplug-dev-log').append(`<div>${log}</div>`));
+        typeof error !== 'undefined' && error !== null && (console.error('[jPlug]', error), $('#jplug-dev-log').append(`<div style="color: #c42e3b;">${error}</div>`));
       }
     },
     loadSettings: function () {
