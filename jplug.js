@@ -237,12 +237,15 @@ window.jplug = {
     rawLog: function (type, badge, title, message) {
       const id = `jplug-${Date.now()}`;
       const timestamp = jplug.utils.getTimeStamp();
-      $('#chat-messages').append(`<div class="cm message jplug-log rcs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="rs-chat-title">${title}</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      // TODO: use own styling rather than rcs
+      $('#chat-messages').append(`<div class="cm message jplug-log rsshit rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="rs-chat-title">${title}</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      rcs.__chatMessages.deleteButton(id, false);
     },
     rawLogSmall: function (type, badge, message) {
       const id = `jplug-${Date.now()}`;
       const timestamp = jplug.utils.getTimeStamp();
-      $('#chat-messages').append(`<div class="cm message jplug-log sml rcs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      $('#chat-messages').append(`<div class="cm message jplug-log rsshit sml rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      rcs.__chatMessages.deleteButton(id, false);
     }
   },
 
