@@ -114,6 +114,7 @@ window.jplug = {
       },
       meme: {
         steal: 'https://i.imgur.com/NVpmaKa.png',
+        deadchat: 'https://i.imgur.com/lP7gPtd.jpg',
         diokong: 'https://i.imgur.com/brnWOIZ.png',
         diobass: 'https://i.imgur.com/Wp8K8IB.png'
       }
@@ -575,11 +576,11 @@ window.jplug = {
 
   __rcsMehList: function () {
     // show rcs meh list
-    if ($('meh-rs-list').size() > 0) {
-      $('meh-rs-list').html('');
+    if ($('#meh-rs-list').size() > 0) {
+      $('#meh-rs-list').html('');
       API.getUsers().forEach((u) => {
         if (u.vote == -1) {
-          $('meh-rs-list').append($(`<p id="${u.id}"></p>`).text(u.username));
+          $('#meh-rs-list').append($(`<p id="${u.id}"></p>`).text(u.username));
         }
       });
     }
