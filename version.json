@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 2,
-    "patch": 0
+    "patch": 1
   },
-  "notes": "added restricted video check command: /blocked"
+  "notes": "reduce spam auto respond"
 }

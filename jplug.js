@@ -609,7 +609,8 @@ window.jplug = {
     }
     // hug
     else if (reHug.test(chat.message)) {
-      API.sendChat('D-don\'t hug me, it\'s not like I like you b-baka! https://i.imgur.com/BmgG3MI.gif');
+      // API.sendChat('D-don\'t hug me, it\'s not like I like you b-baka! https://i.imgur.com/BmgG3MI.gif');
+      API.sendChat('D-don\'t hug me, it\'s not like I like you b-baka! :roobaka:');
     }
     // boop
     else if (reBoop.test(chat.message)) {
