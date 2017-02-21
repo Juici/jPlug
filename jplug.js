@@ -478,24 +478,24 @@ window.jplug = {
         _$context._events['chat:delete'][0].callback = function (id) {
           try {
             this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
-            var element = this.$(`.cid-${id}`).closest('.cm');
-            if (jplug.settings.deletedChat && jplug.running && rcs.running !(rcs.settings.deletedChat && (2 <= rcs.__getPermission(API.getUser().id) || 7 <= rcs.Utils.getSpecialRank(API.getUser().id)))) {
+            var msg = this.$(`.cid-${id}`).closest('.cm');
+            if (jplug.settings.deletedChat && jplug.running && rcs.running && !(rcs.settings.deletedChat && (2 <= rcs.__getPermission(API.getUser().id) || 7 <= rcs.Utils.getSpecialRank(API.getUser().id)))) {
               if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
-                var $timer = element.find(`.contents.cid-${id}`);
-                $timer.addClass('rcs-deleted-message');
-                $timer.find('.rcs-small-delete').remove();
-                var list = element.find('.text'), head = list.find('.rcs-deleted-message');
-                list.children().length === head.length && (element.addClass('rcs-deleted-message'),
-                list.children().removeClass('rcs-deleted-message'));
+                var contents = msg.find(`.contents.cid-${id}`);
+                contents.addClass('rcs-deleted-message');
+                contents.find('.rcs-small-delete').remove();
+                var text = msg.find('.text'), head = text.find('.rcs-deleted-message');
+                text.children().length === head.length && (msg.addClass('rcs-deleted-message'),
+                text.children().removeClass('rcs-deleted-message'));
               } else {
-                element.addClass('rcs-deleted-message'), jplug.settings.hideDeleted && element.addClass('text-hidden'),
+                msg.addClass('rcs-deleted-message'), jplug.settings.hideDeleted && msg.addClass('text-hidden'),
                 rcs.Utils.hideButton(id);
               }
             } else {
-              rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat ? ($timer = element.find(`.contents.cid-${id}`),
-              $timer.remove(), list = element.find('.text'), head = list.find('.rcs-deleted-message'),
-              list.children().length === head.length && (element.find('*').off(),
-              element.empty().remove())) : (element.find('*').off(), element.empty().remove());
+              rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat ? (contents = msg.find(`.contents.cid-${id}`),
+              contents.remove(), text = msg.find('.text'), head = text.find('.rcs-deleted-message'),
+              text.children().length === head.length && (msg.find('*').off(),
+              msg.empty().remove())) : (msg.find('*').off(), msg.empty().remove());
             }
           } catch (err) {
             console.error(err, id);

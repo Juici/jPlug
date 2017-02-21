@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 1,
-    "patch": 8
+    "patch": 9
   },
-  "notes": "fix deleted messages"
+  "notes": "fix deleted messages - for real this time"
 }
