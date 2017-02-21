@@ -181,7 +181,7 @@ window.jplug = {
 
       jplug.utils.debug('Getting version...');
       jplug.utils.debug('[getFiles] Getting version info...');
-      $.getJSON(jplug.files.version).done((data) => {
+      $.getJSON(jplug.utils.timeQuery(jplug.files.version)).done((data) => {
         jplug.utils.debug('[getFiles] Retrieved version info');
         jplug.version.major = data.version.major;
         jplug.version.minor = data.version.minor;
@@ -191,6 +191,12 @@ window.jplug = {
         jplug.utils.debug('[getFiles] Loaded');
         callback();
       });
+    },
+    timeQuery: function (url) {
+      if (!(url instanceof URL))
+        url = new URL(url);
+      url.searchParams.set('t', Date.now());
+      return url.href;
     },
     getTimeStamp: function () {
       return PlugSettings.settings.chatTimestamps == 24 ? new Date().toTimeString().split(" ")[0].slice(0, -3) : (PlugSettings.settings.chatTimestamps == 12 ? PlugTime.getChatTimestamp() : '');
@@ -254,7 +260,7 @@ window.jplug = {
 
   checkUpdates: function () {
     jplug.utils.debug('[update] Checking for updates...');
-    jplug._updateChecked || $.getJSON(jplug.files.version).done((data) => {
+    jplug._updateChecked || $.getJSON(jplug.utils.timeQuery(jplug.files.version)).done((data) => {
       const latest = `${data.version.major}.${data.version.minor}.${data.version.patch}`;
       jplug.utils.debug(`[update] Latest: v${latest}`);
       jplug.utils.debug(`[update] Local: v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}`);
@@ -266,7 +272,7 @@ window.jplug = {
         jplug._updateChecked = true;
         $('#jplug-found-update').on('click', () => {
           jplug.utils.debug('[update] Update button in chat clicked');
-          $.getScript(jplug.files.js);
+          $.getScript(jplug.utils.timeQuery(jplug.files.js));
           $('#jplug-found-update').off('click').remove();
         });
       } else {
@@ -395,7 +401,7 @@ window.jplug = {
       cmd: ['jreload', 'jplugreload', 'reloadjplug'],
       fn: function (cmd, args) {
         jplug.utils.debug('[reload] Command forced reload');
-        $.getScript(jplug.files.js);
+        $.getScript(jplug.utils.timeQuery(jplug.files.js));
       }
     },
     // afk: /<cmd> <reason>
@@ -474,20 +480,20 @@ window.jplug = {
               const element = this.$(`cid-${id}`).closest('.cm');
               if (jplug.settings.mod.deletedChat && jplug.running) {
                 let msg = element.find(`.contents.cid-${id}`);
-                msg.addClass('rcs-deleted-message');
-                msg.find('.rcs-small-delete').remove();
+                msg.addClass('jplug-deleted-message');
+                msg.find('.jplug-small-delete').remove();
                 msg = element.find('.text');
-                const del = msg.find('.rcs-deleted-message');
+                const del = msg.find('.jplug-deleted-message');
                 if (msg.children().length === del.length) {
-                  element.addClass('rcs-deleted-message');
-                  msg.children().removeClass('rcs-deleted-message');
+                  element.addClass('jplug-deleted-message');
+                  msg.children().removeClass('jplug-deleted-message');
                 }
               } else {
                 if (jplug.running) {
                   let msg = element.find('.contents.cid-' + id);
                   msg.remove();
                   msg = element.find('.text');
-                  const del = msg.find('.rcs-deleted-message');
+                  const del = msg.find('.jplug-deleted-message');
                   if (msg.children().length === del.length) {
                     element.find('*').off();
                     element.empty().remove();
