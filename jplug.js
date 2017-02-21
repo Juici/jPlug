@@ -162,7 +162,7 @@ window.jplug = {
             this.load();
           } else {
             jplug.utils.debug('[jplug] [checkLoad] Not yet loaded');
-            setTimeout(this.hook, 250);
+            setTimeout(() =>  loader.hook(), 250);
           }
         },
         load: function () {
