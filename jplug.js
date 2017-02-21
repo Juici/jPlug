@@ -245,14 +245,14 @@ window.jplug = {
       const timestamp = jplug.utils.getTimeStamp();
       // TODO: use own styling rather than rcs
       $('#chat-messages').append(`<div class="cm message jplug-log rsshit rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="rs-chat-title">${title}</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
-      rcs.Utils.scrollChat('chat-messages');
+      rcs.Utils.scrollChat('#chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
     },
     rawLogSmall: function (type, badge, message) {
       const id = `jplug-${Date.now()}`;
       const timestamp = jplug.utils.getTimeStamp();
       $('#chat-messages').append(`<div class="cm message jplug-log rsshit sml rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
-      rcs.Utils.scrollChat('chat-messages');
+      rcs.Utils.scrollChat('#chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
     }
   },
@@ -429,7 +429,7 @@ window.jplug = {
         API.sendChat(jplug.settings.custom.afk.start.replace(/%%reason%%/g, reason));
       }
     },
-    // gifs: /gif <gif>
+    // gifs: /<cmd> <gif>
     gif: {
       cmd: 'gif',
       fn: function (cmd, args) {
@@ -441,7 +441,7 @@ window.jplug = {
         }
       }
     },
-    // memes: /meme <img>
+    // memes: /<cmd> <img>
     meme: {
       cmd: 'meme',
       fn: function (cmd, args) {
@@ -451,6 +451,13 @@ window.jplug = {
         } else {
           jplug.__chat.logSmall('red', 'icon icon-chat-system', `Unknown meme: ${join}`);
         }
+      }
+    },
+    // blocked song: /<cmd>
+    blocked: {
+      cmd: ['blocked', 'available', 'restricted'],
+      fn: function (cmd, args) {
+        jplug.__chat.rawLogSmall('red', 'icon icon-x-grey', `<a href="https://polsy.org.uk/stuff/ytrestrict.cgi?ytid=${API.getMedia().cid}" target="_blank">Restriction Check</a>`);
       }
     }
   },
