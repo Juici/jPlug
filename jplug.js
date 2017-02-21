@@ -158,7 +158,7 @@ window.jplug = {
         hook: function () {
           jplug.utils.debug('[checkLoad] Checking load...');
 
-          if ($('.loading-box').size() === 0) {
+          if ($('.loading-box').size() === 0 && typeof rcs !== 'undefined' && rcs.running) {
             this.load();
           } else {
             jplug.utils.debug('[jplug] [checkLoad] Not yet loaded');
