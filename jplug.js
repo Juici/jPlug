@@ -537,7 +537,7 @@ window.jplug = {
         jplug.running = false;
 
         $('#chat-messages').find('.jplug-deleted-message').remove();
-        $('.cm.jplug-log"').remove();
+        $('.cm.jplug-log').remove();
 
         $('[id^="jplug-"]').off('click').remove();
 
