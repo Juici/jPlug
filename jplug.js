@@ -477,7 +477,7 @@ window.jplug = {
         // override rcs deleted chat
         _$context._events['chat:delete'][0].callback = function (id) {
           try {
-            this.lastText && this.lastText.hasClass(`cid-${id}`)) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
+            this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
             var element = this.$(`.cid-${id}`).closest('.cm');
             if (jplug.settings.deletedChat && jplug.running && rcs.running !(rcs.settings.deletedChat && (2 <= rcs.__getPermission(API.getUser().id) || 7 <= rcs.Utils.getSpecialRank(API.getUser().id)))) {
               if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
