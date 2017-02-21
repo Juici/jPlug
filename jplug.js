@@ -417,15 +417,15 @@ window.jplug = {
 
         jplug.other.afk.enabled = true;
         jplug.other.afk.reason = reason;
-        jplug.__chat.logSmall('yellow', 'icon icon-chat-system', `AFK: true (${reason})`);
-        API.sendChat(jplug.settings.custom.afk.start.replace(/%reason%/g, reason));
+        jplug.__chat.logSmall('yellow', '', `AFK: true (${reason})`);
+        API.sendChat(jplug.settings.custom.afk.start.replace(/%%reason%%/g, reason));
       }
     },
     // gifs: /gif <gif>
     gif: {
       cmd: 'gif',
       fn: function (cmd, args) {
-        const join = Array.prototype.join.call(args, ' ');
+        const join = args.join(' ');
         if (jplug.settings.custom.gif.hasOwnProperty(join)) {
           API.sendChat(jplug.settings.custom.gif[join]);
         } else {
@@ -437,7 +437,7 @@ window.jplug = {
     meme: {
       cmd: 'meme',
       fn: function (cmd, args) {
-        const join = Array.prototype.join.call(args, ' ');
+        const join = args.join(' ');
         if (jplug.settings.custom.meme.hasOwnProperty(join)) {
           API.sendChat(jplug.settings.custom.meme[join]);
         } else {
