@@ -517,7 +517,7 @@ window.jplug = {
         // TODO: custom user styling
 
         jplugLoad.end = (new Date()).getTime();
-        jplug.__chat.rawLogSmall('green', 'icon icon-star-white', `Activated jPlug v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}<br>Loaded in ${jplugLoad.end - jplugLoad.start}`);
+        jplug.__chat.rawLogSmall('green', 'icon icon-star-white', `Activated jPlug v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}<br>Loaded in ${jplugLoad.end - jplugLoad.start}ms`);
       }
     } catch (err) {
       throw console.error(`[jPlug] [ERROR] ${err}`), err;
