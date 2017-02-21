@@ -266,7 +266,7 @@ window.jplug = {
       const latest = `${data.version.major}.${data.version.minor}.${data.version.patch}`;
       jplug.utils.debug(`[update] Latest: v${latest}`);
       jplug.utils.debug(`[update] Local: v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}`);
-      if (data.version.major > jplug.version.major || data.version.minor > jplug.version.minor || data.version.patch > jplug.ver.patch) {
+      if (data.version.major > jplug.version.major || data.version.minor > jplug.version.minor || data.version.patch > jplug.version.patch) {
         jplug.utils.debug(`[update] Found update: v${latest}`);
 
         const timestamp = jplug.utils.getTimeStamp();
