@@ -16,6 +16,7 @@
     @mixin badge($size: 30px) {
       $halfsize: ($size / 2);
       // top: calc(50% - #{$halfsize});
+      top: 8px;
       left: ((46px / 2) - $halfsize);
     }
 
