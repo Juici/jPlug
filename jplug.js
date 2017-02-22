@@ -488,7 +488,7 @@ window.jplug = {
         // TODO: add settings menu
         jplug.utils.debug('[init] UI content added');
 
-        // override rcs deleted chat
+        // override deleted chat
         jplug.__deletedChat(); // TODO: stop rcs overriding when reloaded
 
         jplug.running = true;
