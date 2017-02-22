@@ -2,7 +2,7 @@
 function iterate(match, test) {
   if (typeof match !== 'object' || typeof test !== 'object')
     return false;
-  for (let prop in match) {
+  for (const prop in match) {
     if (match.hasOwnProperty(prop)) {
       if (typeof match[prop] === 'object') {
         if (!iterate(match[prop], test[prop])) {
@@ -20,7 +20,7 @@ function iterate(match, test) {
 
 function getModule(obj) {
   const modules = require.s.contexts._.defined;
-  for (let prop in modules) {
+  for (const prop in modules) {
     if (modules.hasOwnProperty(prop)) {
       const module = modules[prop];
       if (iterate(obj, module)) {
@@ -30,10 +30,10 @@ function getModule(obj) {
   }
 }
 
-typeof _$context == 'undefined' && (_$context = getModule({ _events: { 'AlertEvent:alert': 'object' }, dispatch: 'function' }));
-typeof PlugTime == 'undefined' && (PlugTime = getModule({ getChatTimestamp: 'function' }));
-typeof PlugSettings == 'undefined' && (PlugSettings = getModule({ settings: 'object' }));
-
+/* globals _$context, PlugTime, PlugSettings */
+typeof _$context === 'undefined' && (_$context = getModule({ _events: { 'AlertEvent:alert': 'object' }, dispatch: 'function' }));
+typeof PlugTime === 'undefined' && (PlugTime = getModule({ getChatTimestamp: 'function' }));
+typeof PlugSettings === 'undefined' && (PlugSettings = getModule({ settings: 'object' }));
 // end requirejs
 
 if (typeof jplug !== 'undefined')
@@ -54,9 +54,9 @@ window.jplug = {
 
   files: {
     // TODO: automate minify and version
-    js: 'https://juici.github.io/jPlug/jplug.js',
-    css: 'https://juici.github.io/jPlug/jplug.css',
-    version: 'https://juici.github.io/jPlug/version.json'
+    js: 'https://juici.github.io/jPlug/dist/jplug.js',
+    css: 'https://juici.github.io/jPlug/dist/jplug.css',
+    version: 'https://juici.github.io/jPlug/dist/version.json'
   },
 
   running: false,
@@ -92,8 +92,8 @@ window.jplug = {
       },
       afk: {
         reason: ':o where am i???',
-        message: '/me is afk (%%reason%%) right now @%%user%% - sorry kiddo',
-        start: '/me is now afk (%%reason%%) - quick mention them as much as possible',
+        message: '/me is afk ( %%reason%% ) right now @%%user%% - sorry kiddo',
+        start: '/me is now afk ( %%reason%% ) - quick, mention them as much as possible',
         stop: '/me is no longer afk :o'
       },
 
@@ -200,7 +200,7 @@ window.jplug = {
       return url.href;
     },
     getTimeStamp: function () {
-      return PlugSettings.settings.chatTimestamps == 24 ? new Date().toTimeString().split(" ")[0].slice(0, -3) : (PlugSettings.settings.chatTimestamps == 12 ? PlugTime.getChatTimestamp() : '');
+      return PlugSettings.settings.chatTimestamps === 24 ? new Date().toTimeString().split(' ')[0].slice(0, -3) : (PlugSettings.settings.chatTimestamps === 12 ? PlugTime.getChatTimestamp() : '');
     },
     skip: function () {
       if (API.getDJ().id === API.getUser().id) {
@@ -218,10 +218,10 @@ window.jplug = {
         $('meh').click();
     },
     getWoots: function () {
-      return API.getUsers().filter(u => u.vote == 1);
+      return API.getUsers().filter(u => u.vote === 1);
     },
     getMehs: function () {
-      return API.getUsers().filter(u => u.vote == -1);
+      return API.getUsers().filter(u => u.vote === -1);
     },
     getGrabs: function () {
       return API.getUsers().filter(u => u.grab);
@@ -245,14 +245,14 @@ window.jplug = {
       const id = `jplug-${Date.now()}`;
       const timestamp = jplug.utils.getTimeStamp();
       // TODO: use own styling rather than rcs
-      $('#chat-messages').append(`<div class="cm message jplug-log rsshit rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="rs-chat-title">${title}</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      $('#chat-messages').append(`<div class="cm message jplug-log jplug-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="jplug-chat-title">${title}</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
       rcs.Utils.scrollChat('#chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
     },
     rawLogSmall: function (type, badge, message) {
       const id = `jplug-${Date.now()}`;
       const timestamp = jplug.utils.getTimeStamp();
-      $('#chat-messages').append(`<div class="cm message jplug-log rsshit sml rs-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
+      $('#chat-messages').append(`<div class="cm message jplug-log sml jplug-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
       rcs.Utils.scrollChat('#chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
     }
@@ -271,7 +271,7 @@ window.jplug = {
         jplug.utils.debug(`[update] Found update: v${latest}`);
 
         const timestamp = jplug.utils.getTimeStamp();
-        $('#chat-messages').append(`<div class="cm message jplug-log rcs-log-system" id="jplug-found-update"><div class="badge-box"><i class="icon icon-chat-system"></i></div><div class="msg"><div class="from"><span class="rs-chat-title">jPlug Update</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">An update for jPlug has been found - click here to update</div><div class="text"><br><strong>Includes:</strong>${data.notes}</div></div></div>`);
+        $('#chat-messages').append(`<div class="cm message jplug-log jplug-log-system" id="jplug-found-update"><div class="badge-box"><i class="icon icon-chat-system"></i></div><div class="msg"><div class="from"><span class="jplug-chat-title">jPlug Update</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">An update for jPlug has been found - click here to update</div><div class="text"><br><strong>Includes:</strong>${data.notes}</div></div></div>`);
         jplug._updateChecked = true;
         $('#jplug-found-update').on('click', () => {
           jplug.utils.debug('[update] Update button in chat clicked');
@@ -325,7 +325,7 @@ window.jplug = {
     __active: false,
     init: function () {
       if (!this.__active) {
-        for (let listener of this.listeners) {
+        for (const listener of this.listeners) {
           API.on(listener.hook, jplug._proxy[listener.cb]);
         }
         this.__active = true;
@@ -333,7 +333,7 @@ window.jplug = {
     },
     close: function () {
       if (this.__active) {
-        for (let listener of this.listeners) {
+        for (const listener of this.listeners) {
           API.off(listener.hook, jplug._proxy[listener.cb]);
         }
         this.__active = false;
@@ -379,13 +379,13 @@ window.jplug = {
     const cmd = String(split[0]).substring(1).toLowerCase();
     const args = split.slice(1);
 
-    for (let c in jplug.commands) {
+    for (const c in jplug.commands) {
       let aliases = jplug.commands[c].cmd;
       if (!Array.isArray(aliases))
         aliases = [aliases];
 
-      for (let c2 of aliases) {
-        if (cmd == c2) {
+      for (const c2 of aliases) {
+        if (cmd === c2) {
           jplug.commands[c].fn(cmd, args);
           break;
         }
@@ -413,10 +413,10 @@ window.jplug = {
       fn: function (cmd, args) {
         let reason = ':o where am i???';
 
-        if (args.length == 0) {
+        if (args.length === 0) {
           if (jplug.other.afk.enabled) {
             jplug.other.afk.enabled = false;
-            // jplug.__chat.logSmall('yellow', 'icon icon-chat-system', `AFK: false`);
+            jplug.__chat.logSmall('yellow', '', 'AFK: false');
             API.sendChat(jplug.settings.custom.afk.stop);
             return;
           }
@@ -536,7 +536,7 @@ window.jplug = {
             if (this.lastText && this.lastText.hasClass(`cid-${id}`)) {
               this.lastID = this.lastType = this.lastText = this.lastTime = void 0;
             }
-            var table = this.$(`.cid-${id}`).closest('.cm');
+            const table = this.$(`.cid-${id}`).closest('.cm');
             table.find('*').off();
             table.empty().remove();
           } catch (err) {
@@ -561,7 +561,7 @@ window.jplug = {
     if ($('#meh-rs-list').size() > 0) {
       $('#meh-rs-list').html('');
       API.getUsers().forEach((u) => {
-        if (u.vote == -1) {
+        if (u.vote === -1) {
           $('#meh-rs-list').append($(`<p id="${u.id}"></p>`).text(u.username));
         }
       });
@@ -607,24 +607,28 @@ window.jplug = {
     _$context._events['chat:delete'][0].callback = function (id) {
       try {
         this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
-        var msg = this.$(`.cid-${id}`).closest('.cm');
+        const msg = this.$(`.cid-${id}`).closest('.cm');
         if ((jplug.settings.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
           if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
-            var contents = msg.find(`.contents.cid-${id}`);
+            const contents = msg.find(`.contents.cid-${id}`);
             contents.addClass('jplug-deleted-message');
             contents.find('.rcs-small-delete').remove();
-            var text = msg.find('.text'), head = text.find('.jplug-deleted-message');
-            text.children().length === head.length && (msg.addClass('jplug-deleted-message'),
+            const text = msg.find('.text'), deleted = text.find('.jplug-deleted-message');
+            text.children().length === deleted.length && (msg.addClass('jplug-deleted-message'),
             text.children().removeClass('jplug-deleted-message'));
           } else {
-            msg.addClass('jplug-deleted-message'), jplug.settings.hideDeleted && msg.addClass('text-hidden'),
-            rcs.Utils.hideButton(id);
+            msg.addClass('jplug-deleted-message');
+            jplug.settings.hideDeleted && (msg.addClass('text-hidden'), rcs.Utils.hideButton(id));
           }
         } else {
-          rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat ? (contents = msg.find(`.contents.cid-${id}`),
-          contents.remove(), text = msg.find('.text'), head = text.find('.jplug-deleted-message'),
-          text.children().length === head.length && (msg.find('*').off(),
-          msg.empty().remove())) : (msg.find('*').off(), msg.empty().remove());
+          if (rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat) {
+            msg.find(`.contents.cid-${id}`).remove();
+            const text = msg.find('.text'), deleted = text.find('.jplug-deleted-message');
+            text.children().length === deleted.length && (msg.find('*').off(), msg.empty().remove());
+          } else {
+            msg.find('*').off();
+            msg.empty().remove();
+          }
         }
       } catch (err) {
         console.error(err, id);

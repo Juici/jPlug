@@ -1,0 +1,50 @@
+/** Chat
+--------------------------------------------------*/
+
+#chat {
+  // deleted messages
+  .jplug-deleted-message {
+    opacity: 0.3;
+  }
+  .jplug-deleted-message:hover {
+    opacity: 1;
+  }
+
+  // log
+  .jplug-log {
+    // badges
+    .badge-box {
+      background: none;
+      border-radius: 0;
+    }
+    &.sml {
+      .badge-box {
+        margin: 8px 0 0 15px;
+        height: 16px;
+        width: 16px;
+      }
+      .icon {
+        height: 16px;
+        width: 16px;
+      }
+    }
+
+    // msg font weight
+    .text {
+      font-weight: 400;
+    }
+
+    // colors
+    @mixin log($type, $color) {
+      .jplug-log-#{$type} {
+        border-left: 3px solid $color;
+        color: $color;
+        font-weight: 700;
+      }
+    }
+
+    @include log(green, #90ad2f);
+    @include log(yellow, #ffdd6f);
+    @include log(red, #c42e3b);
+  }
+}
