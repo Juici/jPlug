@@ -53,7 +53,6 @@ window.jplug = {
   },
 
   files: {
-    // TODO: automate minify and version
     js: 'https://juici.github.io/jPlug/jplug.min.js',
     css: 'https://juici.github.io/jPlug/jplug.min.css',
     version: 'https://juici.github.io/jPlug/version.json'
@@ -75,20 +74,20 @@ window.jplug = {
       chatLog: false,
       historyAlert: false,
       lengthAlert: false,
-      songAvailability: true, // TODO
+      songAvailability: true, // TODO: check song available
       deletedChat: true
     },
-    debug: true,
+    debug: false,
     custom: {
       sounds: {
         // TODO
       },
       mentions: {
-        enabled: false, // TODO
+        enabled: false, // TODO: custom mention strings
         match: []
       },
       colors: {
-        // TODO
+        // TODO: idk coloured stuff maybe?
       },
       afk: {
         reason: ':o where am i???',
