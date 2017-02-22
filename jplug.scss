@@ -36,7 +36,7 @@
 
     // colors
     @mixin log($type, $color) {
-      .jplug-log-#{$type} {
+      &.jplug-log-#{$type} {
         border-left: 3px solid $color;
         color: $color;
         font-weight: 700;
