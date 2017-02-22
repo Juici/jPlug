@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 3,
-    "patch": 4
+    "patch": 5
   },
-  "notes": "custom log icons"
+  "notes": "- fixed incorrect chat icons<br>- centered chat icons"
 }

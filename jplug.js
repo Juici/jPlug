@@ -271,7 +271,7 @@ window.jplug = {
         jplug.utils.debug(`[update] Found update: v${latest}`);
 
         const timestamp = jplug.utils.getTimeStamp();
-        $('#chat-messages').append(`<div class="cm message jplug-log jplug-log-red" id="jplug-found-update"><div class="badge-box"><i class="icon icon-system"></i></div><div class="msg"><div class="from"><span class="jplug-chat-title">jPlug Update</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">An update for jPlug has been found - click here to update</div><div class="text"><br><strong>Includes:</strong>${data.notes}</div></div></div>`);
+        $('#chat-messages').append(`<div class="cm message jplug-log jplug-log-red" id="jplug-found-update"><div class="badge-box"><i class="icon icon-system-red"></i></div><div class="msg"><div class="from"><span class="jplug-chat-title">jPlug Update</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">An update for jPlug has been found - click here to update</div><div class="text"><br><strong>Includes:</strong><br>${data.notes}</div></div></div>`);
         jplug._updateChecked = true;
         $('#jplug-found-update').on('click', () => {
           jplug.utils.debug('[update] Update button in chat clicked');
