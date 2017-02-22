@@ -196,7 +196,7 @@ window.jplug = {
     timeQuery: function (url) {
       if (!(url instanceof URL))
         url = new URL(url);
-      url.searchParams.set('t', Date.now());
+      url.searchParams.set('_', Date.now());
       return url.href;
     },
     getTimeStamp: function () {
@@ -503,7 +503,7 @@ window.jplug = {
         jplug._tickUpdate = setInterval(jplug.checkUpdates, 5 * 60 * 1000);
 
         jplug.utils.debug('[init] Loading styling...');
-        $('head').append(`<link rel="stylesheet" type="text/css" id="jplug-css" href="${jplug.files.css}" />`);
+        $('head').append(`<link rel="stylesheet" type="text/css" id="jplug-css" href="${jplug.utils.timeQuery(jplug.files.css)}" />`);
         // TODO: custom user styling
 
         jplugLoad.end = (new Date()).getTime();
