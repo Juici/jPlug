@@ -271,7 +271,7 @@ window.jplug = {
         jplug.utils.debug(`[update] Found update: v${latest}`);
 
         const timestamp = jplug.utils.getTimeStamp();
-        $('#chat-messages').append(`<div class="cm message jplug-log jplug-log-system" id="jplug-found-update"><div class="badge-box"><i class="icon icon-chat-system"></i></div><div class="msg"><div class="from"><span class="jplug-chat-title">jPlug Update</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">An update for jPlug has been found - click here to update</div><div class="text"><br><strong>Includes:</strong>${data.notes}</div></div></div>`);
+        $('#chat-messages').append(`<div class="cm message jplug-log jplug-log-red" id="jplug-found-update"><div class="badge-box"><i class="icon icon-chat-system"></i></div><div class="msg"><div class="from"><span class="jplug-chat-title">jPlug Update</span><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">An update for jPlug has been found - click here to update</div><div class="text"><br><strong>Includes:</strong>${data.notes}</div></div></div>`);
         jplug._updateChecked = true;
         $('#jplug-found-update').on('click', () => {
           jplug.utils.debug('[update] Update button in chat clicked');
@@ -507,7 +507,7 @@ window.jplug = {
         // TODO: custom user styling
 
         jplugLoad.end = (new Date()).getTime();
-        jplug.__chat.rawLogSmall('green', 'icon icon-star-white', `Activated jPlug v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}<br>Loaded in ${jplugLoad.end - jplugLoad.start}ms`);
+        jplug.__chat.rawLogSmall('blue', 'icon icon-tick-white', `Activated jPlug v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}<br>Loaded in ${jplugLoad.end - jplugLoad.start}ms`);
       }
     } catch (err) {
       throw console.error(`[jPlug] [ERROR] ${err}`), err;

@@ -29,6 +29,21 @@
       }
     }
 
+    @mixin icon($type) {
+      .icon.icon-chat-#{$type} {
+        background: url('https://juici.github.io/jPlug/icons/#{$type}.png');
+      }
+    }
+
+    @include icon(star-white);
+    @include icon(system-red);
+    @include icon(system-white);
+    @include icon(tick-blue);
+    @include icon(tick-white);
+    @include icon(star-white);
+    @include icon(x-grey);
+    @include icon(x-white);
+
     // msg font weight
     .text {
       font-weight: 400;
@@ -43,6 +58,7 @@
       }
     }
 
+    @include log(blue, #00bde8);
     @include log(green, #90ad2f);
     @include log(yellow, #ffdd6f);
     @include log(red, #c42e3b);
