@@ -545,7 +545,7 @@ window.jplug = {
         };
 
         $('#jplug-dev-log').remove();
-        jplug.__chat.logSmall('red', 'icon icon-system', 'Deactivated jPlug');
+        jplug.__chat.logSmall('red', 'icon icon-system-red', 'Deactivated jPlug');
         $(window).trigger('resize');
       }
     } catch (err) {
