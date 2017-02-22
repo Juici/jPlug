@@ -484,6 +484,8 @@ window.jplug = {
         jplug.listeners.init();
         jplug.utils.debug('[init] Listeners enabled');
 
+        $(window).on('beforeunload.plug', () => jplug.utils.saveSettings());
+
         jplug.utils.debug('[init] Adding UI content...');
         // TODO: add settings menu
         jplug.utils.debug('[init] UI content added');
@@ -521,6 +523,8 @@ window.jplug = {
       if (jplug.running) {
         this.listeners.close();
         clearInterval(jplug._tickUpdate);
+
+        $(window).off('beforeunload.plug');
 
         jplug.utils.saveSettings();
         jplug.running = false;
