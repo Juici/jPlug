@@ -35,14 +35,14 @@
       }
     }
 
-    @include icon(star-white);
-    @include icon(system-red);
-    @include icon(system-white);
-    @include icon(tick-blue);
-    @include icon(tick-white);
-    @include icon(star-white);
-    @include icon(x-grey);
-    @include icon(x-white);
+    @include icon('star-white');
+    @include icon('system-red');
+    @include icon('system-white');
+    @include icon('tick-blue');
+    @include icon('tick-white');
+    @include icon('star-white');
+    @include icon('x-grey');
+    @include icon('x-white');
 
     // msg font weight
     .text {
@@ -58,9 +58,9 @@
       }
     }
 
-    @include log(blue, #00bde8);
-    @include log(green, #90ad2f);
-    @include log(yellow, #ffdd6f);
-    @include log(red, #c42e3b);
+    @include log('blue', #00bde8);
+    @include log('green', #90ad2f);
+    @include log('yellow', #ffdd6f);
+    @include log('red', #c42e3b);
   }
 }
