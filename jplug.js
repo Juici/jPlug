@@ -454,11 +454,18 @@ window.jplug = {
         }
       }
     },
-    // blocked song: /<cmd>
+    // blocked song: /<cmd> [message]
     blocked: {
       cmd: ['blocked', 'available', 'restricted'],
       fn: function (cmd, args) {
         jplug.__chat.rawLogSmall('red', 'icon icon-x-grey', `<a href="https://polsy.org.uk/stuff/ytrestrict.cgi?ytid=${API.getMedia().cid}" target="_blank">Restriction Check</a>`);
+      }
+    },
+    // hi: /<cmd>
+    hi: {
+      cmd: 'hi',
+      fn: function (cmd, args) {
+        API.sendChat(`:roohi: ${args.join(' ')}`.trim());
       }
     }
   },
