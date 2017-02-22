@@ -54,9 +54,9 @@ window.jplug = {
 
   files: {
     // TODO: automate minify and version
-    js: 'https://juici.github.io/jPlug/dist/jplug.js',
-    css: 'https://juici.github.io/jPlug/dist/jplug.css',
-    version: 'https://juici.github.io/jPlug/dist/version.json'
+    js: 'https://juici.github.io/jPlug/jplug.min.js',
+    css: 'https://juici.github.io/jPlug/jplug.min.css',
+    version: 'https://juici.github.io/jPlug/version.json'
   },
 
   running: false,

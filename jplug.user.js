@@ -2,9 +2,9 @@
 // @name        jPlug Loader
 // @namespace   github.com/Juici/jPlug
 // @author      Juici
-// @version     0.1.2
+// @version     0.2.0
 
-// @downloadURL https://juici.github.io/jPlug/dist/jplug.user.js
+// @downloadURL https://juici.github.io/jPlug/jplug.user.js
 
 // @include     https://plug.dj/*
 // @include     https://*.plug.dj/*
@@ -48,7 +48,7 @@
     load: function () {
       console.log('[jPlug] autoload enabled');
       API.chatLog('jPlug autoload enabled');
-      jQuery.getScript('https://juici.github.io/jPlug/dist/jplug.min.js').fail((e) => console.error(`[jPlug] autoload failed: ${e}`));
+      jQuery.getScript('https://juici.github.io/jPlug/jplug.min.js').fail((e) => console.error(`[jPlug] autoload failed: ${e}`));
     }
   };
   loader.hook();
