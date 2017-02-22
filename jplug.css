@@ -1,0 +1,6 @@
+.jplug-deleted-message {
+  opacity: 0.3;
+}
+.jplug-deleted-message:hover {
+  opacity: 1;
+}

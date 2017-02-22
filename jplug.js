@@ -483,32 +483,7 @@ window.jplug = {
         jplug.utils.debug('[init] UI content added');
 
         // override rcs deleted chat
-        _$context._events['chat:delete'][0].callback = function (id) {
-          try {
-            this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
-            var msg = this.$(`.cid-${id}`).closest('.cm');
-            if ((jplug.settings.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
-              if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
-                var contents = msg.find(`.contents.cid-${id}`);
-                contents.addClass('rcs-deleted-message');
-                contents.find('.rcs-small-delete').remove();
-                var text = msg.find('.text'), head = text.find('.rcs-deleted-message');
-                text.children().length === head.length && (msg.addClass('rcs-deleted-message'),
-                text.children().removeClass('rcs-deleted-message'));
-              } else {
-                msg.addClass('rcs-deleted-message'), jplug.settings.hideDeleted && msg.addClass('text-hidden'),
-                rcs.Utils.hideButton(id);
-              }
-            } else {
-              rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat ? (contents = msg.find(`.contents.cid-${id}`),
-              contents.remove(), text = msg.find('.text'), head = text.find('.rcs-deleted-message'),
-              text.children().length === head.length && (msg.find('*').off(),
-              msg.empty().remove())) : (msg.find('*').off(), msg.empty().remove());
-            }
-          } catch (err) {
-            console.error(err, id);
-          }
-        };
+        jplug.__deletedChat(); // TODO: stop rcs overriding when reloaded
 
         jplug.running = true;
         jplug.utils.debug('[init] Starting features...');
@@ -544,7 +519,7 @@ window.jplug = {
         jplug.utils.saveSettings();
         jplug.running = false;
 
-        // $('#chat-messages').find('.jplug-deleted-message').remove(); // TODO: maybe use own handling for deleted msgs hmm?
+        $('#chat-messages').find('.jplug-deleted-message').remove();
         $('.cm.jplug-log').remove();
 
         $('[id^="jplug-"]').off('click').remove();
@@ -619,6 +594,35 @@ window.jplug = {
       sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
       API.sendChat(`/me :roowhat: :roogasm: :rooshy: :roobaka: ... @${sender} baka`);
     }
+  },
+
+  __deletedChat: function () {
+    _$context._events['chat:delete'][0].callback = function (id) {
+      try {
+        this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
+        var msg = this.$(`.cid-${id}`).closest('.cm');
+        if ((jplug.settings.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
+          if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
+            var contents = msg.find(`.contents.cid-${id}`);
+            contents.addClass('jplug-deleted-message');
+            contents.find('.rcs-small-delete').remove();
+            var text = msg.find('.text'), head = text.find('.jplug-deleted-message');
+            text.children().length === head.length && (msg.addClass('jplug-deleted-message'),
+            text.children().removeClass('jplug-deleted-message'));
+          } else {
+            msg.addClass('jplug-deleted-message'), jplug.settings.hideDeleted && msg.addClass('text-hidden'),
+            rcs.Utils.hideButton(id);
+          }
+        } else {
+          rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat ? (contents = msg.find(`.contents.cid-${id}`),
+          contents.remove(), text = msg.find('.text'), head = text.find('.jplug-deleted-message'),
+          text.children().length === head.length && (msg.find('*').off(),
+          msg.empty().remove())) : (msg.find('*').off(), msg.empty().remove());
+        }
+      } catch (err) {
+        console.error(err, id);
+      }
+    };
   }
 };
 jplug.utils.checkLoad();
