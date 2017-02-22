@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 3,
-    "patch": 5
+    "patch": 6
   },
-  "notes": "- fixed incorrect chat icons<br>- centered chat icons"
+  "notes": "- undo vertical centering of chat icons"
 }
