@@ -55,7 +55,8 @@ window.jplug = {
   files: {
     js: 'https://juici.github.io/jPlug/jplug.min.js',
     css: 'https://juici.github.io/jPlug/jplug.min.css',
-    version: 'https://juici.github.io/jPlug/version.json'
+    version: 'https://juici.github.io/jPlug/version.json',
+    badges: 'https://juici.github.io/jPlug/badges.json'
   },
 
   running: false,
@@ -63,7 +64,9 @@ window.jplug = {
     afk: {
       enabled: false,
       message: null
-    }
+    },
+
+    badges: {}
   },
 
   /** Settings
@@ -181,15 +184,22 @@ window.jplug = {
 
       jplug.utils.debug('Getting version...');
       jplug.utils.debug('[getFiles] Getting version info...');
-      $.getJSON(jplug.utils.timeQuery(jplug.files.version)).done((data) => {
+      $.getJSON(jplug.files.version, { cache: false }).done((data) => {
         jplug.utils.debug('[getFiles] Retrieved version info');
         jplug.version.major = data.version.major;
         jplug.version.minor = data.version.minor;
         jplug.version.patch = data.version.patch;
         jplug.version.notes = data.notes;
 
-        jplug.utils.debug('[getFiles] Loaded');
-        callback();
+        jplug.utils.debug('[getFiles] Getting badges...');
+        $.getJSON(jplug.files.badges, { cache: false }).done((badges) => {
+          jplug.utils.debug('[getFiles] Retrieved badges');
+          jplug.badges = badges;
+          jplug.__badges();
+
+          jplug.utils.debug('[getFiles] Loaded');
+          callback();
+        });
       });
     },
     timeQuery: function (url) {
@@ -262,7 +272,7 @@ window.jplug = {
 
   checkUpdates: function () {
     jplug.utils.debug('[update] Checking for updates...');
-    jplug._updateChecked || $.getJSON(jplug.utils.timeQuery(jplug.files.version)).done((data) => {
+    jplug._updateChecked || $.getJSON(jplug.files.version, { cache: false }).done((data) => {
       const latest = `${data.version.major}.${data.version.minor}.${data.version.patch}`;
       jplug.utils.debug(`[update] Latest: v${latest}`);
       jplug.utils.debug(`[update] Local: v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}`);
@@ -274,7 +284,7 @@ window.jplug = {
         jplug._updateChecked = true;
         $('#jplug-found-update').on('click', () => {
           jplug.utils.debug('[update] Update button in chat clicked');
-          $.getScript(jplug.utils.timeQuery(jplug.files.js));
+          $.getScript(jplug.files.js, { cache: false });
           $('#jplug-found-update').off('click').remove();
         });
       } else {
@@ -403,7 +413,7 @@ window.jplug = {
       cmd: ['jreload', 'jplugreload', 'reloadjplug'],
       fn: function (cmd, args) {
         jplug.utils.debug('[reload] Command forced reload');
-        $.getScript(jplug.utils.timeQuery(jplug.files.js));
+        $.getScript(jplug.files.js, { cache: false });
       }
     },
     // afk: /<cmd> <reason>
@@ -637,6 +647,16 @@ window.jplug = {
         console.error(err, id);
       }
     };
+  },
+
+  __badges: function () {
+    const css = [];
+    const uId = API.getUser().id;
+    for (const id in jplug.other.badges) {
+      css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${jplug.other.badges[id]}) !important; background-size: cover !important }`);
+      if (parseInt(id) === uId)
+        css.push(`#footer-user .badge .bdg { background-image: url(${jplug.other.badges[id]}) !important; background-size: cover !important }`);
+    }
   }
 };
 jplug.utils.checkLoad();
