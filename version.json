@@ -1,8 +1,8 @@
 {
   "version": {
     "major": 0,
-    "minor": 3,
-    "patch": 6
+    "minor": 4,
+    "patch": 0
   },
-  "notes": "- undo vertical centering of chat icons"
+  "notes": "- added custom badges"
 }
