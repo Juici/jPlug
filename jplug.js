@@ -194,7 +194,7 @@ window.jplug = {
         jplug.utils.debug('[getFiles] Getting badges...');
         $.getJSON(jplug.files.badges, { cache: false }).done((badges) => {
           jplug.utils.debug('[getFiles] Retrieved badges');
-          jplug.badges = badges;
+          jplug.other.badges = badges;
           jplug.__badges();
 
           jplug.utils.debug('[getFiles] Loaded');
