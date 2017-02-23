@@ -28,6 +28,7 @@
       margin: 0;
     }
     &.sml {
+      min-height: 28px;
       $size: 16px;
       .badge-box {
         @include badge($size);
