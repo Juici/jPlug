@@ -30,8 +30,9 @@ function getModule(obj) {
   }
 }
 
-/* globals _$context, PlugTime, PlugSettings */
+/* globals _$context, _$chatTriggers, PlugTime, PlugSettings */
 typeof _$context === 'undefined' && (_$context = getModule({ _events: { 'AlertEvent:alert': 'object' }, dispatch: 'function' }));
+typeof _$chatTriggers === 'undefined' && (_$chatTriggers = getModule({ chatCommand: 'function' }));
 typeof PlugTime === 'undefined' && (PlugTime = getModule({ getChatTimestamp: 'function' }));
 typeof PlugSettings === 'undefined' && (PlugSettings = getModule({ settings: 'object' }));
 // end requirejs
@@ -56,7 +57,7 @@ window.jplug = {
     js: 'https://juici.github.io/jPlug/jplug.min.js',
     css: 'https://juici.github.io/jPlug/jplug.min.css',
     version: 'https://juici.github.io/jPlug/version.json',
-    badges: 'https://juici.github.io/jPlug/badges.json'
+    users: 'https://juici.github.io/jPlug/users.json'
   },
 
   running: false,
@@ -66,7 +67,7 @@ window.jplug = {
       message: null
     },
 
-    badges: {}
+    users: {}
   },
 
   /** Settings
@@ -78,7 +79,9 @@ window.jplug = {
       historyAlert: false,
       lengthAlert: false,
       songAvailability: true, // TODO: check song available
-      deletedChat: true
+      deletedChat: true,
+      deletedClearup: 2 * 60 * 1000,
+      hideDeleted: false
     },
     debug: false,
     custom: {
@@ -88,9 +91,6 @@ window.jplug = {
       mentions: {
         enabled: false, // TODO: custom mention strings
         match: []
-      },
-      colors: {
-        // TODO: idk coloured stuff maybe?
       },
       afk: {
         reason: ':o where am i???',
@@ -191,11 +191,11 @@ window.jplug = {
         jplug.version.patch = data.version.patch;
         jplug.version.notes = data.notes;
 
-        jplug.utils.debug('[getFiles] Getting badges...');
-        $.getJSON(jplug.files.badges, { cache: false }).done((badges) => {
-          jplug.utils.debug('[getFiles] Retrieved badges');
-          jplug.other.badges = badges;
-          jplug.__badges();
+        jplug.utils.debug('[getFiles] Getting users...');
+        $.getJSON(jplug.files.users, { cache: false }).done((users) => {
+          jplug.utils.debug('[getFiles] Retrieved users');
+          jplug.other.users = users;
+          jplug.__users();
 
           jplug.utils.debug('[getFiles] Loaded');
           callback();
@@ -500,12 +500,10 @@ window.jplug = {
         // TODO: add settings menu
         jplug.utils.debug('[init] UI content added');
 
-        // override deleted chat
-        jplug.__deletedChat(); // TODO: stop rcs overriding when reloaded
-
         jplug.running = true;
         jplug.utils.debug('[init] Starting features...');
-        // TODO: maybe add stuff hmm?
+        jplug.__deletedChat(); // TODO: stop rcs overriding when reloaded
+        jplug.__command.init();
 
         jplug.utils.debug('[init] Adding chat suggestions...');
         // TODO: command suggestions
@@ -621,7 +619,7 @@ window.jplug = {
       try {
         this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
         const msg = this.$(`.cid-${id}`).closest('.cm');
-        if ((jplug.settings.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
+        if ((jplug.settings.mod.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
           if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
             const contents = msg.find(`.contents.cid-${id}`);
             contents.addClass('jplug-deleted-message');
@@ -631,8 +629,11 @@ window.jplug = {
             text.children().removeClass('jplug-deleted-message'));
           } else {
             msg.addClass('jplug-deleted-message');
-            jplug.settings.hideDeleted && (msg.addClass('text-hidden'), rcs.Utils.hideButton(id));
+            (jplug.settings.mod.hideDeleted || rcs.settings.hideDeleted) && (msg.addClass('text-hidden'), rcs.Utils.hideButton(id));
           }
+
+          // handle deleted chat clear up
+          jplug.settings.mod.deletedClearup > 0 && setTimeout(() => { jplug.settings.mod.deletedClearup > 0 && (msg.find('*').off(), msg.empty().remove()) }, jplug.settings.mod.deletedClearup);
         } else {
           if (rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat) {
             msg.find(`.contents.cid-${id}`).remove();
@@ -649,14 +650,35 @@ window.jplug = {
     };
   },
 
-  __badges: function () {
-    const css = [];
-    const uId = API.getUser().id;
-    for (const id in jplug.other.badges) {
-      css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${jplug.other.badges[id]}) !important; background-size: cover !important }`);
-      if (parseInt(id) === uId)
-        css.push(`#footer-user .badge .bdg { background-image: url(${jplug.other.badges[id]}) !important; background-size: cover !important }`);
+  __command: {
+    init: function () {
+      // override plug command handling
+      _$chatTriggers.chatCommand = function (cmd) {
+        return cmd.charAt(0) === '/' ? (_$context.trigger('chat:command', cmd), true) : false;
+      }
+    },
+    help: function () {
+      // TODO: command help
     }
+  },
+
+  __users: function () {
+    const css = [];
+    for (const id in jplug.other.users) {
+      // badge
+      if ('badge' in jplug.other.users[id]) {
+        const badge = jplug.utils.striphtml(jplug.other.users[id].badge);
+        css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${badge}) !important; background-size: cover !important }`);
+        parseInt(id) === API.getUser().id && css.push(`#footer-user .badge .bdg { background-image: url(${badge}) !important; background-size: cover !important }`);
+      }
+
+      // color
+      if ('color' in jplug.other.users[id]) {
+        const color = jplug.utils.striphtml(jplug.other.users[id].color);
+        css.push(`#chat .id-${id} .un, #user-lists .list .id-${id} .name, #waitlist .list .user[data-uid="${id}"] .name span { color: ${color} !important }`);
+      }
+    }
+    $('head').append(`<style>${css.join('\n')}</style>`);
   }
 };
 jplug.utils.checkLoad();
