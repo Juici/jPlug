@@ -1,8 +1,8 @@
 {
   "version": {
     "major": 0,
-    "minor": 5,
+    "minor": 6,
     "patch": 0
   },
-  "notes": "- added custom user styling - for special people ;)"
+  "notes": "- shrink badges<br>- fix minor issues with badges<br>- command improvements"
 }
