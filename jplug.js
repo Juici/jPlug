@@ -121,6 +121,16 @@ window.jplug = {
     striphtml: function (text) {
       return text.replace(/<.*?>.*?<\/.*?>/gi, '');
     },
+    extend: function (a, b) {
+      for (const i in b) {
+        if (typeof a[i] === 'object' && a[i] !== null && typeof b[i] === 'object' && b[i] !== null) {
+          a[i] = this.extend(a[i], b[i]);
+        } else {
+          a[i] = b[i];
+        }
+      }
+      return a;
+    },
     debug: function (log, error) {
       if (jplug.settings.debug) {
         if ($('#jplug-dev-log').size() === 0) {
@@ -132,7 +142,7 @@ window.jplug = {
     },
     loadSettings: function () {
       jplug.utils.debug('Loading settings...');
-      $.extend(jplug.settings, JSON.parse(localStorage.getItem('jplug-settings')) || {});
+      jplug.utils.extend(jplug.settings, JSON.parse(localStorage.getItem('jplug-settings')) || {});
     },
     saveSettings: function () {
       localStorage.setItem('jplug-settings', JSON.stringify(jplug.settings));
@@ -255,7 +265,7 @@ window.jplug = {
     },
     pushQueue: function () {
       clearTimeout(jplug.__chat._queueId);
-      if (!(jplug.__chat._queue && jplug.__chat._queue.length > 1))
+      if (!(jplug.__chat._queue && jplug.__chat._queue.length > 0))
         return;
       const last = jplug.__chat._last || 0, now = Date.now(), diff = now - last;
       if (last === 0 || diff > jplug.settings.autoChatDelay) {
