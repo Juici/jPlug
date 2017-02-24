@@ -1,8 +1,8 @@
 {
   "version": {
     "major": 0,
-    "minor": 6,
+    "minor": 7,
     "patch": 0
   },
-  "notes": "- shrink badges<br>- fix minor issues with badges<br>- command improvements"
+  "notes": "- added chat queue with delay to auto responder"
 }
