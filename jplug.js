@@ -1,15 +1,15 @@
 // requirejs hooks
-function iterate(match, test) {
-  if (typeof match !== 'object' || typeof test !== 'object')
+function iterate(obj, module) {
+  if (typeof obj !== 'object' || typeof module !== 'object')
     return false;
-  for (const prop in match) {
-    if (match.hasOwnProperty(prop)) {
-      if (typeof match[prop] === 'object') {
-        if (!iterate(match[prop], test[prop])) {
+  for (const prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      if (typeof obj[prop] === 'object') {
+        if (!iterate(obj[prop], module[prop])) {
           return false;
         }
       } else {
-        if ((typeof test[prop]).toLowerCase() !== match[prop].toLowerCase()) {
+        if ((typeof module[prop]).toLowerCase() !== obj[prop].toLowerCase()) {
           return false;
         }
       }
@@ -93,33 +93,14 @@ window.jplug = {
         match: []
       },
       afk: {
-        reason: ':o where am i???',
-        message: '/me is afk ( %%reason%% ) right now @%%user%% - sorry kiddo',
-        start: '/me is now afk ( %%reason%% ) - quick, mention them as much as possible',
-        stop: '/me is no longer afk :o'
+        reason: 'afk',
+        message: '/me is afk right now @%%user%% ( %%reason%% )',
+        start: '/me is now afk ( %%reason%% )',
+        stop: '/me is no longer afk'
       },
 
-      // TODO: move this stuff (temporarily here)
-      gif: {
-        petme: 'https://i.imgur.com/lU5Pf7b.gif',
-        lick: 'https://i.imgur.com/x7If57b.gif',
-        dio: 'https://i.imgur.com/JkXpkWe.gif',
-
-        bye: 'https://i.imgur.com/4jWtDX6.gif',
-        byeflip: 'https://i.imgur.com/hKcRui2.gif',
-
-        steal: 'https://i.imgur.com/tX0XW8a.gif',
-
-        // taiga
-        clap: 'https://i.imgur.com/F29Li2R.gif',
-        notlikethis: 'https://i.imgur.com/ZLx9gHr.gif'
-      },
-      meme: {
-        steal: 'https://i.imgur.com/NVpmaKa.png',
-        deadchat: 'https://i.imgur.com/lP7gPtd.jpg',
-        diokong: 'https://i.imgur.com/brnWOIZ.png',
-        diobass: 'https://i.imgur.com/Wp8K8IB.png'
-      }
+      gif: {},
+      meme: {}
     }
   },
 
@@ -209,10 +190,10 @@ window.jplug = {
       return url.href;
     },
     getTimeStamp: function () {
-      return PlugSettings.settings.chatTimestamps === 24 ? new Date().toTimeString().split(' ')[0].slice(0, -3) : (PlugSettings.settings.chatTimestamps === 12 ? PlugTime.getChatTimestamp() : '');
+      return PlugSettings.settings.chatTimestamps === 24 ? (new Date()).toTimeString().split(' ')[0].slice(0, -3) : (PlugSettings.settings.chatTimestamps === 12 ? PlugTime.getChatTimestamp() : '');
     },
     skip: function () {
-      if (API.getDJ().id === API.getUser().id) {
+      if (API.getDJ() && (API.getDJ().id !== API.getUser().id)) {
         $.post('/_/booth/skip/me');
       } else {
         API.moderateForceSkip();
@@ -384,20 +365,16 @@ window.jplug = {
   __onWaitListUpdate: function (evt) {},
 
   __onChatCommand: function (string) {
-    const split = string.split(' ');
+    const split = string.split(/\s+/);
     const cmd = String(split[0]).substring(1).toLowerCase();
     const args = split.slice(1);
 
     for (const c in jplug.commands) {
       let aliases = jplug.commands[c].cmd;
-      if (!Array.isArray(aliases))
-        aliases = [aliases];
-
-      for (const c2 of aliases) {
-        if (cmd === c2) {
-          jplug.commands[c].fn(cmd, args);
-          break;
-        }
+      Array.isArray(aliases) || (aliases = [aliases]);
+      if (aliases.indexOf(cmd) > -1) {
+        jplug.commands[c].fn(cmd, args);
+        break;
       }
     }
   },
@@ -408,24 +385,78 @@ window.jplug = {
   --------------------------------------------------*/
 
   commands: {
-    // reload: /<cmd>
     reload: {
       cmd: ['jreload', 'jplugreload', 'reloadjplug'],
+      desc: 'Reloads the script',
+      usage: '/<cmd>',
       fn: function (cmd, args) {
         jplug.utils.debug('[reload] Command forced reload');
         $.getScript(jplug.files.js, { cache: false });
       }
     },
-    // afk: /<cmd> <reason>
+
+    help: {
+      cmd: 'help',
+      desc: 'Lists commands or information about specified command',
+      usage: '/<cmd> [cmd]',
+      fn: function (cmd, args) {
+        if (args.length === 0) {
+          const lines = [];
+
+          for (let c in jplug.commands) {
+            c = jplug.commands[c];
+            let alias = c.cmd;
+            Array.isArray(alias) && (alias = alias[0]);
+            lines.push(`${alias} - <em>${c.desc}</em>`);
+          }
+
+          jplug.__chat.rawLog('yellow', 'icon icon-chat-admin', 'Command Help', lines.join('<br>'));
+        } else {
+          const search = args.length === 1 ? args[0].toLowerCase() : 'help';
+          let c;
+          let a;
+
+          for (let c2 in jplug.commands) {
+            c2 = jplug.commands[c2];
+            let aliases = c2.cmd;
+            Array.isArray(aliases) || (aliases = [aliases]);
+
+            if (aliases.indexOf(search) > -1) {
+              c = c2;
+              a = aliases;
+              break;
+            }
+          }
+
+          if (typeof c !== 'undefined' && c !== null && 'cmd' in c) {
+            jplug.__chat.rawLog('yellow', 'icon icon-chat-admin', `Command Help: ${search}`, `Aliases: <em>${a.join(', ')}</em><br>Description: <em>${c.desc}</em><br>Usage: <em>${c.usage.replace('<cmd>', search)}</em>`);
+          } else {
+            jplug.__chat.log('red', 'icon icon-system-red', 'Command Help', `Unknown command: ${args[0]}`);
+          }
+        }
+      }
+    },
+
+    blocked: {
+      cmd: ['blocked', 'available', 'restricted'],
+      desc: 'Links the YouTube restricted video checker to check what countries the video is unavailable in',
+      usage: '/<cmd>',
+      fn: function (cmd, args) {
+        jplug.__chat.rawLogSmall('red', 'icon icon-x-grey', `<a href="https://polsy.org.uk/stuff/ytrestrict.cgi?ytid=${API.getMedia().cid}" target="_blank">Restriction Check</a>`);
+      }
+    },
+
     afk: {
       cmd: 'afk',
+      desc: 'Go AFK with optional reason',
+      usage: '/<cmd> [reason]',
       fn: function (cmd, args) {
-        let reason = ':o where am i???';
+        let reason = jplug.settings.custom.afk.reason;
 
         if (args.length === 0) {
           if (jplug.other.afk.enabled) {
             jplug.other.afk.enabled = false;
-            jplug.__chat.logSmall('yellow', '', 'AFK: false');
+            jplug.__chat.logSmall('yellow', 'icon icon-user-white', 'AFK: false');
             API.sendChat(jplug.settings.custom.afk.stop);
             return;
           }
@@ -435,46 +466,52 @@ window.jplug = {
 
         jplug.other.afk.enabled = true;
         jplug.other.afk.reason = reason;
-        jplug.__chat.logSmall('yellow', '', `AFK: true (${reason})`);
+        jplug.__chat.logSmall('yellow', 'icon icon-user-white', `AFK: true ( ${reason} )`);
         API.sendChat(jplug.settings.custom.afk.start.replace(/%%reason%%/g, reason));
       }
     },
-    // gifs: /<cmd> <gif>
+
     gif: {
       cmd: 'gif',
+      desc: 'Send a gif along with optional message',
+      usage: '/<cmd> <gif> [msg]',
       fn: function (cmd, args) {
-        const join = args.join(' ');
-        if (jplug.settings.custom.gif.hasOwnProperty(join)) {
-          API.sendChat(jplug.settings.custom.gif[join]);
+        if (args.length === 0)
+          return jplug.__chat.logSmall('red', 'icon icon-system-red', `Usage: ${this.usage.replace('<cmd>', cmd)}`);
+
+        const gif = args[0].toLowerCase(), msg = args.slice(1).join(' ');
+        if (jplug.settings.custom.gif.hasOwnProperty(gif)) {
+          API.sendChat(`${msg} ${jplug.settings.custom.gif[gif]}`.trim());
         } else {
-          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown gif: ${join}`);
+          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown gif: ${msg}`);
         }
       }
     },
-    // memes: /<cmd> <img>
+
     meme: {
       cmd: 'meme',
+      desc: 'Send a meme along with optional message',
+      usage: '/<cmd> <meme> [msg]',
       fn: function (cmd, args) {
-        const join = args.join(' ');
-        if (jplug.settings.custom.meme.hasOwnProperty(join)) {
-          API.sendChat(jplug.settings.custom.meme[join]);
+        if (args.length === 0)
+          return jplug.__chat.logSmall('red', 'icon icon-system-red', `Usage: ${this.usage.replace('<cmd>', cmd)}`);
+
+        const meme = args[0].toLowerCase(), msg = args.slice(1).join(' ');
+        if (jplug.settings.custom.meme.hasOwnProperty(meme)) {
+          API.sendChat(`${msg} ${jplug.settings.custom.meme[meme]}`.trim());
         } else {
-          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown meme: ${join}`);
+          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown meme: ${msg}`);
         }
       }
     },
-    // blocked song: /<cmd> [message]
-    blocked: {
-      cmd: ['blocked', 'available', 'restricted'],
-      fn: function (cmd, args) {
-        jplug.__chat.rawLogSmall('red', 'icon icon-x-grey', `<a href="https://polsy.org.uk/stuff/ytrestrict.cgi?ytid=${API.getMedia().cid}" target="_blank">Restriction Check</a>`);
-      }
-    },
-    // hi: /<cmd>
+
     hi: {
       cmd: 'hi',
+      desc: 'Send a hi emote along with optional message',
+      usage: '/<cmd> [msg]',
       fn: function (cmd, args) {
-        API.sendChat(`:roohi: ${args.join(' ')}`.trim());
+        const emotes = 'roohi,cirhi,meguhi,ajshi,annihi,antshiyo,lovek7hi,hithi,morrahi,aureyhi,metrohi,brnahi,erenhi,swooghi,hashinshinweeb,inochihi,jrkhi,chippyhey,linkzrhi,machihi,merrhi,harveyhi,mishiihi,msohi,pethi,nanhi,ninikohi,nszhi,obehi,ginahi,pawshi,pterohi,qtthi,huzhihi,rriothi,wynhi,ryohi,sayhi,stevehi,spikeyhi,gumphi,tianhi,uguuhi,stricehi,wraxuhiyo,ytrhi,mmdhi,zilhi'.split(',');
+        API.sendChat(`:${emotes[Math.floor(Math.random() * emotes.length)]}: ${args.join(' ')}`.trim());
       }
     }
   },
@@ -654,11 +691,15 @@ window.jplug = {
     init: function () {
       // override plug command handling
       _$chatTriggers.chatCommand = function (cmd) {
-        return cmd.charAt(0) === '/' ? (_$context.trigger('chat:command', cmd), true) : false;
+        return cmd.charAt(0) === '/' ? jplug.__command.handle(cmd) : false;
       }
     },
-    help: function () {
-      // TODO: command help
+    handle: function (cmd) {
+      // /em and /me are passed as chat
+      if (cmd.indexOf('/em ') === 0 || cmd.indexOf('/me ') === 0)
+        return false;
+
+      return _$context.trigger('chat:command', cmd), true;
     }
   },
 
@@ -669,7 +710,7 @@ window.jplug = {
       if ('badge' in jplug.other.users[id]) {
         const badge = jplug.utils.striphtml(jplug.other.users[id].badge);
         css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${badge}) !important; background-size: cover !important }`);
-        parseInt(id) === API.getUser().id && css.push(`#footer-user .badge .bdg { background-image: url(${badge}) !important; background-size: cover !important }`);
+        parseInt(id) === API.getUser().id && css.push(`#footer-user .badge .bdg { background-image: url(${badge}) !important; background-size: cover !important; border-radius: 6px !important }`);
       }
 
       // color
