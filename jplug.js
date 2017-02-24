@@ -98,6 +98,7 @@ window.jplug = {
         start: '/me is now afk ( %%reason%% )',
         stop: '/me is no longer afk'
       },
+      autoChatDelay: 8 * 1000,
 
       gif: {},
       meme: {}
@@ -226,10 +227,10 @@ window.jplug = {
 
   __chat: {
     log: function (type, badge, title, message) {
-      this.rawLog(type, badge, jplug.utils.striphtml(title), jplug.utils.striphtml(message));
+      jplug.__chat.rawLog(type, badge, jplug.utils.striphtml(title), jplug.utils.striphtml(message));
     },
     logSmall: function (type, badge, message) {
-      this.rawLogSmall(type, badge, jplug.utils.striphtml(message));
+      jplug.__chat.rawLogSmall(type, badge, jplug.utils.striphtml(message));
     },
     rawLog: function (type, badge, title, message) {
       const id = `jplug-${Date.now()}`;
@@ -245,6 +246,25 @@ window.jplug = {
       $('#chat-messages').append(`<div class="cm message jplug-log sml jplug-log-${type}" id="${id}"><div class="badge-box"><i class="${badge}"></i></div><div class="msg"><div class="from"><span class="timestamp" style="display: inline;">${timestamp}</span></div><div class="text">${message}</div></div></div>`);
       rcs.Utils.scrollChat('#chat-messages');
       rcs.__chatMessages.deleteButton(id, false);
+    },
+    queue: function (msg) {
+      const queue = jplug.__chat._queue || [];
+      queue.push(msg);
+      jplug.__chat._queue = queue;
+      jplug.__chat.pushQueue();
+    },
+    pushQueue: function () {
+      clearTimeout(jplug.__chat._queueId);
+      if (!(jplug.__chat._queue && jplug.__chat._queue.length > 1))
+        return;
+      const last = jplug.__chat._last || 0, now = Date.now(), diff = now - last;
+      if (last === 0 || diff > jplug.settings.autoChatDelay) {
+        const msg = jplug.__chat._queue[0];
+        jplug.__chat._queue = jplug.__chat._queue.slice(1), jplug.__chat._last = now;
+        msg && (API.sendChat(msg), jplug.__chat._queue.length > 1 && jplug.__chat.pushQueue());
+      } else {
+        jplug.__chat._queueId = setTimeout(jplug.__chat.pushQueue, diff);
+      }
     }
   },
 
@@ -457,7 +477,7 @@ window.jplug = {
           if (jplug.other.afk.enabled) {
             jplug.other.afk.enabled = false;
             jplug.__chat.logSmall('yellow', 'icon icon-user-white', 'AFK: false');
-            API.sendChat(jplug.settings.custom.afk.stop);
+            jplug.__chat.queue(jplug.settings.custom.afk.stop);
             return;
           }
         } else {
@@ -467,7 +487,7 @@ window.jplug = {
         jplug.other.afk.enabled = true;
         jplug.other.afk.reason = reason;
         jplug.__chat.logSmall('yellow', 'icon icon-user-white', `AFK: true ( ${reason} )`);
-        API.sendChat(jplug.settings.custom.afk.start.replace(/%%reason%%/g, reason));
+        jplug.__chat.queue(jplug.settings.custom.afk.start.replace(/%%reason%%/g, reason));
       }
     },
 
@@ -630,24 +650,24 @@ window.jplug = {
 
     // afk
     if (jplug.other.afk.enabled && reMention.test(chat.message)) {
-      API.sendChat(jplug.settings.custom.afk.message.replace(/%%user%%/gi, chat.un).replace(/%%reason%%/gi, jplug.other.afk.reason));
+      jplug.__chat.queue(jplug.settings.custom.afk.message.replace(/%%user%%/gi, chat.un).replace(/%%reason%%/gi, jplug.other.afk.reason));
     }
     // pet
     else if (rePet.test(chat.message)) {
       let sender = rePet.exec(chat.message);
       sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
-      API.sendChat(`/me purrs happily at @${sender} :nekospin:`);
+      jplug.__chat.queue(`/me purrs happily at @${sender} :nekospin:`);
     }
     // hug
     else if (reHug.test(chat.message)) {
       // API.sendChat('D-don\'t hug me, it\'s not like I like you b-baka! https://i.imgur.com/BmgG3MI.gif');
-      API.sendChat('D-don\'t hug me, it\'s not like I like you b-baka! :roobaka:');
+      jplug.__chat.queue('D-don\'t hug me, it\'s not like I like you b-baka! :roobaka:');
     }
     // boop
     else if (reBoop.test(chat.message)) {
       let sender = reBoop.exec(chat.message);
       sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
-      API.sendChat(`/me :roowhat: :roogasm: :rooshy: :roobaka: ... @${sender} baka`);
+      jplug.__chat.queue(`/me :roowhat: :roogasm: :rooshy: :roobaka: ... @${sender} baka`);
     }
   },
 
