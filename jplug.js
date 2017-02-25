@@ -268,7 +268,7 @@ window.jplug = {
       if (!(jplug.__chat._queue && jplug.__chat._queue.length > 0))
         return;
       const last = jplug.__chat._last || 0, now = Date.now(), diff = now - last;
-      if (last === 0 || diff > jplug.settings.autoChatDelay) {
+      if (last === 0 || diff > jplug.settings.custom.autoChatDelay) {
         const msg = jplug.__chat._queue[0];
         jplug.__chat._queue = jplug.__chat._queue.slice(1), jplug.__chat._last = now;
         msg && (API.sendChat(msg), jplug.__chat._queue.length > 1 && jplug.__chat.pushQueue());
