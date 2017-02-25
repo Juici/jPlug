@@ -739,7 +739,7 @@ window.jplug = {
       // badge
       if ('badge' in jplug.other.users[id]) {
         const badge = jplug.utils.striphtml(jplug.other.users[id].badge);
-        css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${badge}) !important; background-size: cover !important }`);
+        css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${badge}) !important; background-size: cover !important; border-radius: 6px !important }`);
         parseInt(id) === API.getUser().id && css.push(`#footer-user .badge .bdg { background-image: url(${badge}) !important; background-size: cover !important; border-radius: 6px !important }`);
       }
 
