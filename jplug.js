@@ -170,8 +170,6 @@ window.jplug = {
     getFiles: function (callback) {
       callback = callback || function () {};
 
-      $('head').append('<style id="jplug-anchor"></style>');
-
       jplug.utils.loadSettings();
 
       jplug.utils.debug('Getting version...');
@@ -749,7 +747,7 @@ window.jplug = {
         css.push(`#chat .id-${id} .un, #user-lists .list .id-${id} .name, #waitlist .list .user[data-uid="${id}"] .name span { color: ${color} !important }`);
       }
     }
-    $('head').append(`<style>${css.join('\n')}</style>`);
+    $('head').append(`<style id="jplug-users">${css.join('\n')}</style>`);
   }
 };
 jplug.utils.checkLoad();
