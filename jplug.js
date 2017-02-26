@@ -102,7 +102,11 @@ window.jplug = {
       userStyles: true,
 
       gif: {},
-      meme: {}
+      meme: {},
+      hi: [
+        'roohi',
+        'cirhi'
+      ]
     }
   },
 
@@ -500,6 +504,18 @@ window.jplug = {
       }
     },
 
+    clear: {
+      cmd: ['clear', 'clearchat', 'cc'],
+      desc: 'Clear the chat',
+      usage: '/<cmd>',
+      fn: function (cmd, args) {
+        $('#chat-messages').html('');
+        jplug.__chat.rawLogSmall('yellow', 'icon icon-x-white', '<em>Chat log cleared!</em>');
+      }
+    },
+
+    // TODO: add ignore / unignore
+
     gif: {
       cmd: 'gif',
       desc: 'Send a gif along with optional message',
@@ -539,8 +555,7 @@ window.jplug = {
       desc: 'Send a hi emote along with optional message',
       usage: '/<cmd> [msg]',
       fn: function (cmd, args) {
-        const emotes = 'roohi,cirhi,meguhi,ajshi,annihi,antshiyo,lovek7hi,hithi,morrahi,aureyhi,metrohi,brnahi,erenhi,swooghi,hashinshinweeb,inochihi,jrkhi,chippyhey,linkzrhi,machihi,merrhi,harveyhi,mishiihi,msohi,pethi,nanhi,ninikohi,nszhi,obehi,ginahi,pawshi,pterohi,qtthi,huzhihi,rriothi,wynhi,ryohi,sayhi,stevehi,spikeyhi,gumphi,tianhi,uguuhi,stricehi,wraxuhiyo,ytrhi,mmdhi,zilhi'.split(',');
-        API.sendChat(`:${emotes[Math.floor(Math.random() * emotes.length)]}: ${args.join(' ')}`.trim());
+        API.sendChat(`:${jplug.settings.custom.hi[Math.floor(Math.random() * jplug.settings.custom.hi.length)]}: ${args.join(' ')}`.trim());
       }
     }
   },
@@ -720,6 +735,7 @@ window.jplug = {
   __command: {
     init: function () {
       // override plug command handling
+      this.__oldFn = _$chatTriggers.chatCommand;
       _$chatTriggers.chatCommand = function (cmd) {
         return cmd.charAt(0) === '/' ? jplug.__command.handle(cmd) : false;
       }
@@ -728,6 +744,9 @@ window.jplug = {
       // /em and /me are passed as chat
       if (cmd.indexOf('/em ') === 0 || cmd.indexOf('/me ') === 0)
         return false;
+
+      if (cmd.indexOf('/sos ') === 0)
+        return this.__oldFn(cmd);
 
       return _$context.trigger('chat:command', cmd), true;
     }
