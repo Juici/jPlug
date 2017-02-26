@@ -436,7 +436,7 @@ window.jplug = {
             c = jplug.commands[c];
             let alias = c.cmd;
             Array.isArray(alias) && (alias = alias[0]);
-            lines.push(`${alias} - <em>${c.desc}</em>`);
+            lines.push(`/${alias} - <em>${c.desc}</em>`);
           }
 
           jplug.__chat.rawLog('yellow', 'icon icon-chat-admin', 'Command Help', lines.join('<br>'));
