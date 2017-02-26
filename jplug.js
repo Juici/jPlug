@@ -99,6 +99,7 @@ window.jplug = {
         stop: '/me is no longer afk'
       },
       autoChatDelay: 8 * 1000,
+      userStyles: true,
 
       gif: {},
       meme: {}
@@ -577,7 +578,8 @@ window.jplug = {
         jplug._tickUpdate = setInterval(jplug.checkUpdates, 5 * 60 * 1000);
 
         jplug.utils.debug('[init] Loading styling...');
-        $('head').append(`<link rel="stylesheet" type="text/css" id="jplug-css" href="${jplug.utils.timeQuery(jplug.files.css)}" />`);
+        $('head').append('<style id="jplug-anchor"></style>');
+        $('#jplug-anchor').after(`<link rel="stylesheet" type="text/css" id="jplug-css" href="${jplug.utils.timeQuery(jplug.files.css)}" />`);
         // TODO: custom user styling
 
         jplugLoad.end = (new Date()).getTime();
@@ -732,6 +734,10 @@ window.jplug = {
   },
 
   __users: function () {
+    $('#jplug-users').remove();
+    if (!jplug.settings.custom.userStyles)
+      return;
+
     const css = [];
     for (const id in jplug.other.users) {
       // badge
@@ -747,7 +753,7 @@ window.jplug = {
         css.push(`#chat .id-${id} .un, #user-lists .list .id-${id} .name, #waitlist .list .user[data-uid="${id}"] .name span { color: ${color} !important }`);
       }
     }
-    $('head').append(`<style id="jplug-users">${css.join('\n')}</style>`);
+    $('#jplug-anchor').after(`<style id="jplug-users">${css.join('\n')}</style>`);
   }
 };
 jplug.utils.checkLoad();
