@@ -448,7 +448,7 @@ window.jplug = {
             lines.push(`/${alias} - <em>${c.desc}</em>`);
           }
 
-          jplug.__chat.rawLog('yellow', 'icon icon-chat-admin', 'Command Help', lines.join('<br>'));
+          jplug.__chat.log('yellow', 'icon icon-chat-admin', 'Command Help', lines.join('<br>'));
         } else {
           const search = args.length === 1 ? args[0].toLowerCase() : 'help';
           let c;
@@ -467,7 +467,7 @@ window.jplug = {
           }
 
           if (typeof c !== 'undefined' && c !== null && 'cmd' in c) {
-            jplug.__chat.rawLog('yellow', 'icon icon-chat-admin', `Command Help: ${search}`, `Aliases: <em>${a.join(', ')}</em><br>Description: <em>${c.desc}</em><br>Usage: <em>${c.usage.replace('<cmd>', search)}</em>`);
+            jplug.__chat.log('yellow', 'icon icon-chat-admin', `Command Help: ${search}`, `Aliases: <em>${a.join(', ')}</em><br>Description: <em>${c.desc}</em><br>Usage: <em>${c.usage.replace('<cmd>', search)}</em>`);
           } else {
             jplug.__chat.log('red', 'icon icon-system-red', 'Command Help', `Unknown command: ${args[0]}`);
           }
@@ -515,7 +515,7 @@ window.jplug = {
       usage: '/<cmd>',
       fn: function (cmd, args) {
         $('#chat-messages').html('');
-        jplug.__chat.rawLogSmall('yellow', 'icon icon-x-white', '<em>Chat log cleared!</em>');
+        jplug.__chat.logSmall('yellow', 'icon icon-x-white', '<em>Chat log cleared!</em>');
       }
     },
 
@@ -603,7 +603,7 @@ window.jplug = {
         // TODO: custom user styling
 
         jplugLoad.end = (new Date()).getTime();
-        jplug.__chat.rawLogSmall('blue', 'icon icon-tick-white', `Activated jPlug v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}<br>Loaded in ${jplugLoad.end - jplugLoad.start}ms`);
+        jplug.__chat.logSmall('blue', 'icon icon-tick-white', `Activated jPlug v${jplug.version.major}.${jplug.version.minor}.${jplug.version.patch}<br>Loaded in ${jplugLoad.end - jplugLoad.start}ms`);
       }
     } catch (err) {
       throw console.error(`[jPlug] [ERROR] ${err}`), err;
