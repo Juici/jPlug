@@ -94,8 +94,8 @@ window.jplug = {
       },
       afk: {
         reason: 'afk',
-        message: '/me is afk right now @%%user%% ( %%reason%% )',
-        start: '/me is now afk ( %%reason%% )',
+        message: '/me is afk right now @${user} ( ${reason} )',
+        start: '/me is now afk ( ${reason} )',
         stop: '/me is no longer afk'
       },
       autoChatDelay: 8 * 1000,
@@ -106,7 +106,21 @@ window.jplug = {
       hi: [
         'roohi',
         'cirhi'
-      ]
+      ],
+      respond: {
+        pet: {
+          re: '(?:@(.*?)\\s+)?\\bpets\\s+@${user}\\b',
+          msg: '/me purrs happily at @${sender} :nekospin:'
+        },
+        hug: {
+          re: '(?:\\bhugs\\s+@${user}\\b|@${user}.*?@(.*?)\\s+(?:gives\\s+you\\s+a\\s+(?:big\\s+)?hug|hugs\\s+you)\\b)',
+          msg: 'D-don\'t hug me, it\'s not like I like you @${sender} b-baka! :roobaka:'
+        },
+        boop: {
+          re: '(?:@(.*?)\\s+)?\\b(?:boops|pokes)\\s+@${user}\\b',
+          msg: '/me :roowhat: :roogasm: :rooshy: :roobaka: ... @${sender} baka'
+        }
+      }
     }
   },
 
@@ -667,32 +681,24 @@ window.jplug = {
 
     // username
     const uname = API.getUser().username;
-    // regex chat matches
-    const reMention = new RegExp(`@${uname}`, 'gi');
-    const rePet = new RegExp(`(?:@(.*?)\\s+)?\\bpets\\s+@${uname}\\b`, 'i');
-    const reHug = new RegExp(`(?:\\bhugs\\s+@${uname}\\b|@${uname}.*?@.*?\\b(?:gives\\s+you\\s+a\\s+(?:big\\s+)?hug|hugs\\s+you)\\b)`, 'i');
-    const reBoop = new RegExp(`(?:@(.*?)\\s+)?\\b(?:boops|pokes)\\s+@${uname}\\b`);
 
     // afk
+    const reMention = new RegExp(`@${uname}\\b`, 'gi');
     if (jplug.other.afk.enabled && reMention.test(chat.message)) {
-      jplug.__chat.queue(jplug.settings.custom.afk.message.replace(/%%user%%/gi, chat.un).replace(/%%reason%%/gi, jplug.other.afk.reason));
+      jplug.__chat.queue(jplug.settings.custom.afk.message.replace(/\$\{sender\}/gi, chat.un).replace(/\$\{reason\}/gi, jplug.other.afk.reason));
     }
-    // pet
-    else if (rePet.test(chat.message)) {
-      let sender = rePet.exec(chat.message);
-      sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
-      jplug.__chat.queue(`/me purrs happily at @${sender} :nekospin:`);
-    }
-    // hug
-    else if (reHug.test(chat.message)) {
-      // API.sendChat('D-don\'t hug me, it\'s not like I like you b-baka! https://i.imgur.com/BmgG3MI.gif');
-      jplug.__chat.queue('D-don\'t hug me, it\'s not like I like you b-baka! :roobaka:');
-    }
-    // boop
-    else if (reBoop.test(chat.message)) {
-      let sender = reBoop.exec(chat.message);
-      sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
-      jplug.__chat.queue(`/me :roowhat: :roogasm: :rooshy: :roobaka: ... @${sender} baka`);
+
+    // custom responders
+    for (const r of jplug.settings.custom.respond) {
+      if (typeof r.re === 'string' && typeof r.msg === 'string') {
+        const re = new RegExp(r.re.replace(/\$\{user\}/gi, uname), 'i');
+
+        if (re.test(chat.message)) {
+          let sender = re.exec(chat.message);
+          sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
+          jplug.__chat.queue(r.msg.replace(/\$\{sender\}/gi, sender));
+        }
+      }
     }
   },
 
