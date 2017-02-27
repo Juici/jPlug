@@ -448,7 +448,7 @@ window.jplug = {
             lines.push(`/${alias} - <em>${c.desc}</em>`);
           }
 
-          jplug.__chat.log('yellow', 'icon icon-chat-admin', 'Command Help', lines.join('<br>'));
+          jplug.__chat.log('yellow', 'icon icon-help-white', 'Command Help', lines.join('<br>'));
         } else {
           const search = args.length === 1 ? args[0].toLowerCase() : 'help';
           let c;
@@ -467,7 +467,7 @@ window.jplug = {
           }
 
           if (typeof c !== 'undefined' && c !== null && 'cmd' in c) {
-            jplug.__chat.log('yellow', 'icon icon-chat-admin', `Command Help: ${search}`, `Aliases: <em>${a.join(', ')}</em><br>Description: <em>${c.desc}</em><br>Usage: <em>${c.usage.replace('<cmd>', search)}</em>`);
+            jplug.__chat.log('yellow', 'icon icon-help-white', `Command Help: ${search}`, `Aliases: <em>${a.join(', ')}</em><br>Description: <em>${c.desc}</em><br>Usage: <em>${c.usage.replace('<cmd>', search)}</em>`);
           } else {
             jplug.__chat.log('red', 'icon icon-system-red', 'Command Help', `Unknown command: ${args[0]}`);
           }
