@@ -107,20 +107,7 @@ window.jplug = {
         'roohi',
         'cirhi'
       ],
-      respond: {
-        pet: {
-          re: '(?:@(.*?)\\s+)?\\bpets\\s+@${user}\\b',
-          msg: '/me purrs happily at @${sender} :nekospin:'
-        },
-        hug: {
-          re: '(?:\\bhugs\\s+@${user}\\b|@${user}.*?@(.*?)\\s+(?:gives\\s+you\\s+a\\s+(?:big\\s+)?hug|hugs\\s+you)\\b)',
-          msg: 'D-don\'t hug me, it\'s not like I like you @${sender} b-baka! :roobaka:'
-        },
-        boop: {
-          re: '(?:@(.*?)\\s+)?\\b(?:boops|pokes)\\s+@${user}\\b',
-          msg: '/me :roowhat: :roogasm: :rooshy: :roobaka: ... @${sender} baka'
-        }
-      }
+      respond: {}
     }
   },
 
