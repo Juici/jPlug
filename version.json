@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 8,
-    "patch": 0
+    "patch": 1
   },
-  "notes": "- configurable auto responder<br>- icon fixes<br>- add /clear and readd /sos<br>- minor fixes"
+  "notes": "- fix responder"
 }
