@@ -116,7 +116,7 @@ window.jplug = {
 
   utils: {
     _sandboxDocument: null,
-    htmlentities: function (text) {
+    htmlEntities: function (text) {
       let doc = jplug.utils._sandboxDocument;
       if (!doc || typeof doc === 'undefined' || doc === null)
         doc = jplug.utils._sandboxDocument = document.implementation.createHTMLDocument('jplug-sandbox');
@@ -667,7 +667,7 @@ window.jplug = {
   },
 
   __autoRespond: function (chat) {
-    chat.message = jplug.utils.htmlentities(chat.message);
+    chat.message = jplug.utils.htmlEntities(chat.message);
     chat.message = chat.message.trim();
 
     // username
