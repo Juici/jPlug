@@ -680,7 +680,8 @@ window.jplug = {
     }
 
     // custom responders
-    for (const r of jplug.settings.custom.respond) {
+    for (let r in jplug.settings.custom.respond) {
+      r = jplug.settings.custom.respond[r];
       if (typeof r.re === 'string' && typeof r.msg === 'string') {
         const re = new RegExp(r.re.replace(/\$\{user\}/gi, uname), 'i');
 
