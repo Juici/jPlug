@@ -124,8 +124,12 @@ window.jplug = {
       tmp.innerHTML = text;
       return tmp.textContent || tmp.text || tmp.innerText || '';
     },
-    striphtml: function (text) {
-      return text.replace(/<.*?>.*?<\/.*?>/gi, '');
+    cleanHTML: function (text) {
+      const tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi, allow = ['blockquote', 'code', 'span', 'div', 'table', 'tr', 'td', 'br', 'br/', 'strong', 'em', 'a'];
+      text = text.split('&#8237;').join('&amp;#8237;').split('&#8238;').join('&amp;#8238;'); // remove ltr / rtl overrides
+      return text.replace(tags, (a, b) => {
+        return allow.indexOf(b.toLowerCase()) > -1 ? a : '';
+      });
     },
     extend: function (a, b) {
       for (const i in b) {
@@ -241,10 +245,10 @@ window.jplug = {
 
   __chat: {
     log: function (type, badge, title, message) {
-      jplug.__chat.rawLog(type, badge, jplug.utils.striphtml(title), jplug.utils.striphtml(message));
+      jplug.__chat.rawLog(type, badge, jplug.utils.cleanHTML(title), jplug.utils.cleanHTML(message));
     },
     logSmall: function (type, badge, message) {
-      jplug.__chat.rawLogSmall(type, badge, jplug.utils.striphtml(message));
+      jplug.__chat.rawLogSmall(type, badge, jplug.utils.cleanHTML(message));
     },
     rawLog: function (type, badge, title, message) {
       const id = `jplug-${Date.now()}`;
@@ -754,14 +758,14 @@ window.jplug = {
     for (const id in jplug.other.users) {
       // badge
       if ('badge' in jplug.other.users[id]) {
-        const badge = jplug.utils.striphtml(jplug.other.users[id].badge);
+        const badge = jplug.utils.cleanHTML(jplug.other.users[id].badge);
         css.push(`#chat .id-${id} .badge-box .bdg, #user-rollover.id-${id} .badge-box .bdg { background-image: url(${badge}) !important; background-size: cover !important; border-radius: 6px !important }`);
         parseInt(id) === API.getUser().id && css.push(`#footer-user .badge .bdg { background-image: url(${badge}) !important; background-size: cover !important; border-radius: 6px !important }`);
       }
 
       // color
       if ('color' in jplug.other.users[id]) {
-        const color = jplug.utils.striphtml(jplug.other.users[id].color);
+        const color = jplug.utils.cleanHTML(jplug.other.users[id].color);
         css.push(`#chat .id-${id} .un, #user-lists .list .id-${id} .name, #waitlist .list .user[data-uid="${id}"] .name span { color: ${color} !important }`);
       }
     }
