@@ -46,12 +46,14 @@
       }
     }
 
+    @include icon('help-grey');
+    @include icon('help-white');
     @include icon('star-white');
     @include icon('system-red');
     @include icon('system-white');
     @include icon('tick-blue');
     @include icon('tick-white');
-    @include icon('star-white');
+    @include icon('user-white');
     @include icon('x-grey');
     @include icon('x-white');
 
