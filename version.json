@@ -1,8 +1,8 @@
 {
   "version": {
     "major": 0,
-    "minor": 7,
-    "patch": 3
+    "minor": 8,
+    "patch": 0
   },
-  "notes": "- user styles toggle option"
+  "notes": "- configurable auto responder<br>- icon fixes<br>- add /clear and readd /sos<br>- minor fixes"
 }
