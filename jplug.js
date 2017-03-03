@@ -37,6 +37,8 @@ typeof PlugTime === 'undefined' && (PlugTime = getModule({ getChatTimestamp: 'fu
 typeof PlugSettings === 'undefined' && (PlugSettings = getModule({ settings: 'object' }));
 // end requirejs
 
+const $ = window.jQuery;
+
 if (typeof jplug !== 'undefined')
   jplug.__close();
 
