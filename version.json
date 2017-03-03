@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 9,
-    "patch": 0
+    "patch": 1
   },
-  "notes": "- increase auto responder delay<br>- add deleting user to deleted chat"
+  "notes": "- fix deleted chat"
 }
