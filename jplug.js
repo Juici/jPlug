@@ -98,7 +98,7 @@ window.jplug = {
         start: '/me is now afk ( ${reason} )',
         stop: '/me is no longer afk'
       },
-      autoChatDelay: 8 * 1000,
+      autoChatDelay: 10 * 1000,
       userStyles: true,
 
       gif: {},
@@ -575,6 +575,10 @@ window.jplug = {
 
     try {
       if (!jplug.running) {
+        jplug.utils.debug('[init] Loading socket hooks...');
+        jplug.__socket.init();
+        jplug.utils.debug('[init] Socket hooked');
+
         jplug.utils.debug('[init] Loading listeners...');
         jplug.initProxy();
         jplug.listeners.init();
@@ -588,7 +592,7 @@ window.jplug = {
 
         jplug.running = true;
         jplug.utils.debug('[init] Starting features...');
-        jplug.__deletedChat(); // TODO: stop rcs overriding when reloaded
+        jplug.__deletedChat.init(); // TODO: stop rcs overriding when reloaded
         jplug.__command.init();
 
         jplug.utils.debug('[init] Adding chat suggestions...');
@@ -629,18 +633,7 @@ window.jplug = {
 
         $('[id^="jplug-"]').off('click').remove();
 
-        _$context._events['chat:delete'][0].callback = function (id) {
-          try {
-            if (this.lastText && this.lastText.hasClass(`cid-${id}`)) {
-              this.lastID = this.lastType = this.lastText = this.lastTime = void 0;
-            }
-            const table = this.$(`.cid-${id}`).closest('.cm');
-            table.find('*').off();
-            table.empty().remove();
-          } catch (err) {
-            console.error(err, id);
-          }
-        };
+        jplug.__deletedChat.close();
 
         $('#jplug-dev-log').remove();
         jplug.__chat.logSmall('red', 'icon icon-system-red', 'Deactivated jPlug');
@@ -694,40 +687,114 @@ window.jplug = {
     }
   },
 
-  __deletedChat: function () {
-    _$context._events['chat:delete'][0].callback = function (id) {
-      try {
-        this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
-        const msg = this.$(`.cid-${id}`).closest('.cm');
-        if ((jplug.settings.mod.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
-          if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
-            const contents = msg.find(`.contents.cid-${id}`);
-            contents.addClass('jplug-deleted-message');
-            contents.find('.rcs-small-delete').remove();
-            const text = msg.find('.text'), deleted = text.find('.jplug-deleted-message');
-            text.children().length === deleted.length && (msg.addClass('jplug-deleted-message'),
-            text.children().removeClass('jplug-deleted-message'));
-          } else {
-            msg.addClass('jplug-deleted-message');
-            (jplug.settings.mod.hideDeleted || rcs.settings.hideDeleted) && (msg.addClass('text-hidden'), rcs.Utils.hideButton(id));
-          }
+  __deletedChat: {
+    init: function () {
+      _$context._events['chat:delete'][0].callback = function (id) {
+        try {
+          this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
+          const msg = this.$(`.cid-${id}`).closest('.cm');
+          if ((jplug.settings.mod.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
+            if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
+              const contents = msg.find(`.contents.cid-${id}`);
+              contents.addClass('jplug-deleted-message');
+              contents.find('.rcs-small-delete').remove();
+              const text = msg.find('.text'), deleted = text.find('.jplug-deleted-message');
+              text.children().length === deleted.length && (msg.addClass('jplug-deleted-message'),
+              text.children().removeClass('jplug-deleted-message'));
+            } else {
+              msg.addClass('jplug-deleted-message');
+              (jplug.settings.mod.hideDeleted || rcs.settings.hideDeleted) && (msg.addClass('text-hidden'), rcs.Utils.hideButton(id));
+            }
 
-          // handle deleted chat clear up
-          jplug.settings.mod.deletedClearup > 0 && setTimeout(() => { jplug.settings.mod.deletedClearup > 0 && (msg.find('*').off(), msg.empty().remove()) }, jplug.settings.mod.deletedClearup);
-        } else {
-          if (rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat) {
-            msg.find(`.contents.cid-${id}`).remove();
-            const text = msg.find('.text'), deleted = text.find('.jplug-deleted-message');
-            text.children().length === deleted.length && (msg.find('*').off(), msg.empty().remove());
+            // handle deleted chat clear up
+            jplug.settings.mod.deletedClearup > 0 && setTimeout(() => { jplug.settings.mod.deletedClearup > 0 && (msg.find('*').off(), msg.empty().remove()) }, jplug.settings.mod.deletedClearup);
           } else {
-            msg.find('*').off();
-            msg.empty().remove();
+            if (rcs.settings.improvedChat && rcs.running && !rcs.settings.oldChat) {
+              msg.find(`.contents.cid-${id}`).remove();
+              const text = msg.find('.text'), deleted = text.find('.jplug-deleted-message');
+              text.children().length === deleted.length && (msg.find('*').off(), msg.empty().remove());
+            } else {
+              msg.find('*').off();
+              msg.empty().remove();
+            }
+          }
+        } catch (err) {
+          console.error(err, id);
+        }
+      };
+
+      _$context.on('jplug:socket:chatDelete', (evt) => {
+        if ((jplug.settings.mod.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
+          const data = evt.data[0], timestamp = (new Date()).toTimeString().split(' ')[0];
+          const cid = data.p.c, user = API.getUser(data.p.mi);
+          try {
+            const chat = this.$(`.cid-${cid}`).closest('.cm'), msg = chat.find('*').closest('.msg'), deleted = msg.find(`.deletedChat[data-id=${user.id}]`);
+            let count;
+            if (deleted.size() > 0) {
+              count = 1;
+              if (typeof deleted.attr('data-count') !== 'undefined')
+                count = parseInt(deleted.attr('data-count')) + 1;
+              deleted.attr('data-count', count);
+              deleted.text(`deleted by ${user.username} at ${timestamp} (${count}x)`);
+            } else {
+              msg.append(`<span data-id="${user.id}" class="deletedChat">deleted by ${user.username} at ${timestamp}</span>`);
+            }
+
+            const chatmsgs = $('#chat-messages');
+            chatmsgs.scrollTop() > chatmsgs[0].scrollHeight - chatmsgs.height() - 28 && chatmsgs.scrollTop(chatmsgs[0].scrollHeight);
+          } catch (err) {
+            console.error(err);
           }
         }
-      } catch (err) {
-        console.error(err, id);
-      }
-    };
+      });
+    },
+    close: function () {
+      _$context._events['chat:delete'][0].callback = function (id) {
+        try {
+          if (this.lastText && this.lastText.hasClass(`cid-${id}`)) {
+            this.lastID = this.lastType = this.lastText = this.lastTime = void 0;
+          }
+          const table = this.$(`.cid-${id}`).closest('.cm');
+          table.find('*').off();
+          table.empty().remove();
+        } catch (err) {
+          console.error(err, id);
+        }
+      };
+
+      _$context.off('jplug:socket:chatDelete');
+    }
+  },
+
+  __socket: {
+    init: function () {
+      rcs.plugSock.__onmessage || (rcs.plugSock.__onmessage = rcs.plugSock.onmessage);
+      rcs.plugSock.onmessage = function (sock, evt) {
+        jplug.settings.debug && console.log('[jPlug] [SOCKET-RECEIVE]', evt);
+        if (evt.data.indexOf('[{') === 0) {
+          const data = JSON.parse(evt.data);
+          _$context.trigger(`jplug:socket:${data[0].a}`, {
+            target: evt.target,
+            dataString: evt.data,
+            data: data,
+            timeStamp: evt.timeStamp
+          });
+        }
+        rcs.plugSock.__onmessage(sock, evt);
+      };
+
+      rcs.plugSock.__send || (rcs.plugSock.__send = rcs.plugSock.send);
+      rcs.plugSock.send = function (sock, evt) {
+        jplug.settings.debug && console.log('[jPlug] [SOCKET-SEND]', evt);
+        rcs.plugSock.__send(sock, evt);
+      };
+    },
+    close: function () {
+      rcs.plugSock.onmessage = rcs.plugSock.__onmessage;
+      delete rcs.plugSock.__onmessage;
+      rcs.plugSock.send = rcs.plugSock.__send;
+      delete rcs.plugSock.__send;
+    }
   },
 
   __command: {
