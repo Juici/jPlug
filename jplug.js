@@ -37,8 +37,6 @@ typeof PlugTime === 'undefined' && (PlugTime = getModule({ getChatTimestamp: 'fu
 typeof PlugSettings === 'undefined' && (PlugSettings = getModule({ settings: 'object' }));
 // end requirejs
 
-const $ = window.jQuery;
-
 if (typeof jplug !== 'undefined')
   jplug.__close();
 
@@ -694,7 +692,7 @@ window.jplug = {
       _$context._events['chat:delete'][0].callback = function (id) {
         try {
           this.lastText && this.lastText.hasClass(`cid-${id}`) && (this.lastID = this.lastType = this.lastText = this.lastTime = void 0);
-          const msg = this.$(`.cid-${id}`).closest('.cm');
+          const msg = $(`.cid-${id}`).closest('.cm');
           if ((jplug.settings.mod.deletedChat || rcs.settings.deletedChat) && jplug.running && rcs.running) {
             if (rcs.settings.improvedChat && !rcs.settings.oldChat) {
               const contents = msg.find(`.contents.cid-${id}`);
@@ -730,7 +728,7 @@ window.jplug = {
           const data = evt.data[0], timestamp = (new Date()).toTimeString().split(' ')[0];
           const cid = data.p.c, user = API.getUser(data.p.mi);
           try {
-            const chat = this.$(`.cid-${cid}`).closest('.cm'), msg = chat.find('*').closest('.msg'), deleted = msg.find(`.deletedChat[data-id=${user.id}]`);
+            const chat = $(`.cid-${cid}`).closest('.cm'), msg = chat.find('*').closest('.msg'), deleted = msg.find(`.deletedChat[data-id=${user.id}]`);
             let count;
             if (deleted.size() > 0) {
               count = 1;
@@ -756,7 +754,7 @@ window.jplug = {
           if (this.lastText && this.lastText.hasClass(`cid-${id}`)) {
             this.lastID = this.lastType = this.lastText = this.lastTime = void 0;
           }
-          const table = this.$(`.cid-${id}`).closest('.cm');
+          const table = $(`.cid-${id}`).closest('.cm');
           table.find('*').off();
           table.empty().remove();
         } catch (err) {
