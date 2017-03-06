@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 9,
-    "patch": 1
+    "patch": 2
   },
-  "notes": "- fix deleted chat"
+  "notes": "- fix afk template"
 }
