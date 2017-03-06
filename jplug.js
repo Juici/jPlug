@@ -505,7 +505,7 @@ window.jplug = {
         jplug.other.afk.enabled = true;
         jplug.other.afk.reason = reason;
         jplug.__chat.logSmall('yellow', 'icon icon-user-white', `AFK: true ( ${reason} )`);
-        jplug.__chat.queue(jplug.settings.custom.afk.start.replace(/%%reason%%/g, reason));
+        jplug.__chat.queue(jplug.settings.custom.afk.start.replace(/\$\{reason\}/g, reason));
       }
     },
 
