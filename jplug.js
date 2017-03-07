@@ -533,7 +533,7 @@ window.jplug = {
         if (jplug.settings.custom.gif.hasOwnProperty(gif)) {
           API.sendChat(`${msg} ${jplug.settings.custom.gif[gif]}`.trim());
         } else {
-          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown gif: ${msg}`);
+          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown gif: ${gif}`);
         }
       }
     },
@@ -550,7 +550,7 @@ window.jplug = {
         if (jplug.settings.custom.meme.hasOwnProperty(meme)) {
           API.sendChat(`${msg} ${jplug.settings.custom.meme[meme]}`.trim());
         } else {
-          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown meme: ${msg}`);
+          jplug.__chat.logSmall('red', 'icon icon-system-red', `Unknown meme: ${meme}`);
         }
       }
     },
