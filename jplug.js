@@ -94,11 +94,13 @@ window.jplug = {
       },
       afk: {
         reason: 'afk',
-        message: '/me is afk right now @${user} ( ${reason} )',
-        start: '/me is now afk ( ${reason} )',
-        stop: '/me is no longer afk'
+        message: '/me is afk right now @{{user}} ( {{reason}} )',
+        start: '/me is now afk ( {{reason}} )',
+        stop: '/me is no longer afk',
+        cooldown: 120
       },
-      autoChatDelay: 10 * 1000,
+      chatDelay: 8,
+      respondCooldown: 30,
       userStyles: true,
 
       gif: {},
@@ -140,6 +142,13 @@ window.jplug = {
         }
       }
       return a;
+    },
+    replace: function (string, repl) {
+      string = string || '';
+      for (const prop in repl) {
+        repl[prop] !== null && (string = string.replace(new RegExp(`\\{\\{${prop}\\}\\}`, 'gi'), String(repl[prop])));
+      }
+      return string;
     },
     debug: function (log, error) {
       if (jplug.settings.debug) {
@@ -276,7 +285,7 @@ window.jplug = {
       if (!(jplug.__chat._queue && jplug.__chat._queue.length > 0))
         return;
       const last = jplug.__chat._last || 0, now = Date.now(), diff = now - last;
-      if (last === 0 || diff > jplug.settings.custom.autoChatDelay) {
+      if (last === 0 || diff > jplug.settings.custom.chatDelay * 100) {
         const msg = jplug.__chat._queue[0];
         jplug.__chat._queue = jplug.__chat._queue.slice(1), jplug.__chat._last = now;
         msg && (API.sendChat(msg), jplug.__chat._queue.length > 1 && jplug.__chat.pushQueue());
@@ -505,7 +514,7 @@ window.jplug = {
         jplug.other.afk.enabled = true;
         jplug.other.afk.reason = reason;
         jplug.__chat.logSmall('yellow', 'icon icon-user-white', `AFK: true ( ${reason} )`);
-        jplug.__chat.queue(jplug.settings.custom.afk.start.replace(/\$\{reason\}/g, reason));
+        jplug.__chat.queue(jplug.utils.replace(jplug.settings.custom.afk.start, { reason: reason }));
       }
     },
 
@@ -667,21 +676,33 @@ window.jplug = {
     const uname = API.getUser().username;
 
     // afk
-    const reMention = new RegExp(`@${uname}\\b`, 'gi');
+    const reMention = new RegExp(`@(${uname})(\\,|\\.|\\!|\\?|\\s+|$)`, 'gi');
     if (jplug.other.afk.enabled && reMention.test(chat.message)) {
-      jplug.__chat.queue(jplug.settings.custom.afk.message.replace(/\$\{sender\}/gi, chat.un).replace(/\$\{reason\}/gi, jplug.other.afk.reason));
+      const cooldown = jplug.settings.custom.afk.cooldown || jplug.settings.custom.respondCooldown || 0, last = jplug.settings.custom.afk.__last || 0;
+
+      if (last === 0 || Date.now() - last >= cooldown * 1000) {
+        jplug.__chat.queue(jplug.utils.replace(jplug.settings.custom.afk.message, { sender: chat.un, reason: jplug.other.afk.reason }));
+        jplug.settings.custom.afk.__last = Date.now();
+      }
     }
 
     // custom responders
     for (let r in jplug.settings.custom.respond) {
       r = jplug.settings.custom.respond[r];
+
+      const cooldown = r.cooldown || jplug.settings.custom.respondCooldown || 0, last = r.__last || 0;
+
+      if (last !== 0 || Date.now() - last < cooldown * 1000)
+        continue;
+
       if (typeof r.re === 'string' && typeof r.msg === 'string') {
-        const re = new RegExp(r.re.replace(/\$\{user\}/gi, uname), 'i');
+        const re = new RegExp(jplug.utils.replace(r.re, { user: uname }), 'i');
 
         if (re.test(chat.message)) {
           let sender = re.exec(chat.message);
           sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
-          jplug.__chat.queue(r.msg.replace(/\$\{sender\}/gi, sender));
+          jplug.__chat.queue(jplug.utils.replace(r.msg, { sender: sender }));
+          r.__last = Date.now();
         }
       }
     }
