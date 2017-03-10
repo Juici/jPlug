@@ -1,8 +1,8 @@
 {
   "version": {
     "major": 0,
-    "minor": 9,
-    "patch": 3
+    "minor": 10,
+    "patch": 0
   },
-  "notes": "- fix gif and meme messages"
+  "notes": "- add responder cooldown<br>- add include/exclude user to responder"
 }
