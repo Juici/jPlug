@@ -701,6 +701,30 @@ window.jplug = {
         if (re.test(chat.message)) {
           let sender = re.exec(chat.message);
           sender = sender.length > 1 && typeof sender[1] !== 'undefined' ? sender[1] : chat.un;
+
+          let include = r.include || /[\s\S]*/i, exclude = r.exclude || /(?!)/;
+          if (!(include instanceof RegExp)) {
+            if (Array.isArray(include)) {
+              include = new RegExp(`(${include.join('|')})`, 'i');
+            } else if (typeof include === 'string') {
+              include = new RegExp(include, 'i');
+            } else {
+              include = /[\s\S]*/i;
+            }
+          }
+          if (!(exclude instanceof RegExp)) {
+            if (Array.isArray(exclude)) {
+              exclude = new RegExp(`(${exclude.join('|')})`, 'i');
+            } else if (typeof exclude === 'string') {
+              exclude = new RegExp(exclude, 'i');
+            } else {
+              exclude = /(?!)/;
+            }
+          }
+
+          if (!include.test(sender) || exclude.test(sender))
+            continue;
+
           jplug.__chat.queue(jplug.utils.replace(r.msg, { sender: sender }));
           r.__last = Date.now();
         }
