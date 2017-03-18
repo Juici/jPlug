@@ -2,7 +2,7 @@
   "version": {
     "major": 0,
     "minor": 10,
-    "patch": 0
+    "patch": 1
   },
-  "notes": "- add responder cooldown<br>- add include/exclude user to responder"
+  "notes": "- fix responder cooldown"
 }
