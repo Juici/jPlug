@@ -692,7 +692,7 @@ window.jplug = {
 
       const cooldown = r.cooldown || jplug.settings.custom.respondCooldown || 0, last = r.__last || 0;
 
-      if (last !== 0 || Date.now() - last < cooldown * 1000)
+      if (last !== 0 && Date.now() - last < cooldown * 1000)
         continue;
 
       if (typeof r.re === 'string' && typeof r.msg === 'string') {
