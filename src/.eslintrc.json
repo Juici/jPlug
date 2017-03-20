@@ -1,0 +1,6 @@
+{
+    "extends": "juici/browser",
+    "env": {
+      "amd": true
+    }
+}
