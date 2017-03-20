@@ -1,8 +1,0 @@
-{
-  "version": {
-    "major": 0,
-    "minor": 10,
-    "patch": 1
-  },
-  "notes": "- fix responder cooldown"
-}
