@@ -1,12 +1,11 @@
 /**
  * Loader adapted from plugCubed and ExtPlug
  */
-
 ;(function loading() {
 
     // only load on plug.dj
     /* eslint-disable no-alert */
-    if (!(~window.location.hostname.indexof('plug.dj')))
+    if (window.location.hostname.indexof('plug.dj') === -1)
         return window.alert('Loading jPlug outside of plug.dj is not supported.');
     /* eslint-enable no-alert */
 
