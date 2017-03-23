@@ -1,6 +1,14 @@
 {
     "extends": "juici/browser",
     "env": {
-      "amd": true
+        "amd": true
+    },
+    "globals": {
+        "requirejs": false,
+        "require": false,
+        "define": false,
+        "API": false,
+        "_": false,
+        "jplug": true
     }
 }
