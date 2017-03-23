@@ -1,4 +1,4 @@
-const gulp = require('gulp');
+import gulp from 'gulp';
 
 gulp.task('watch', (done) => {
     const watcher = gulp.watch('src/**/*.{scss,js}', gulp.parallel('build'));
