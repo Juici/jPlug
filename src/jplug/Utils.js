@@ -11,7 +11,7 @@ define(['jplug/Class'], (Class) => {
          * @callback  mapCallback
          * @param     {*}       value     value being mapped
          * @param     {string}  property  property in object
-         * @param     {Object}  property  current object
+         * @param     {Object}  object    current object
          * @returns   {*}  new mapped value
          */
 
@@ -35,6 +35,39 @@ define(['jplug/Class'], (Class) => {
             }
 
             return object;
+        },
+
+        /**
+         * Callback for the find function.
+         * @callback  findCallback
+         * @param     {*}       value     value being checked
+         * @param     {string}  property  property being checked
+         * @param     {Object}  object    current object
+         * @returns   {boolean}  true if this is what was being looked for
+         */
+
+        /**
+         * Finds the value of an enumerable object that matches the callback.
+         * @param    {Object}        object    object to map
+         * @param    {findCallback}  callback  function used to find object
+         * @returns  {*}  the found value, or null
+         */
+        find(object, callback) {
+            if (object === null || typeof object === 'undefined')
+                return null;
+
+            const keys = Object.keys(object);
+
+            for (let i = 0; i < keys.length; i++) {
+                const value = object[keys[i]];
+
+                const matched = callback(value, keys[i], object);
+
+                if (matched)
+                    return value;
+            }
+
+            return null;
         },
 
         /**
