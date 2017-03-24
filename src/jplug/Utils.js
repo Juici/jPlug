@@ -79,12 +79,49 @@ define(['jplug/Class'], (Class) => {
             const tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
             const allow = ['blockquote', 'code', 'span', 'div', 'table', 'tr', 'td', 'br', 'br/', 'strong', 'em', 'a'];
 
+            // sanitise LTR / TRL overrides
             string = string.split('&#8237;').join('&amp;#8237;');
             string = string.split('&#8238;').join('&amp;#8238;');
 
             return string.replace(tags, (a, b) => {
                 return allow.indexOf(b.toLowerCase()) > -1 ? a : '';
             });
+        },
+
+        /**
+         * Convert HTML string to plaintext. Strips tags and translates HTML entities.
+         * @param    {string}  html  HTML to convert
+         * @returns  {string}  the plaintext of the HTML
+         */
+        html2text(html) {
+            if (!html) return '';
+
+            let doc;
+
+            // use text/html DOMParser
+            try {
+                const parser = new DOMParser();
+
+                doc = parser.parseFromString(html, 'text/html');
+            } catch (ex) { /* noop */ }
+
+            // fallback to document.implementation
+            if (!doc)
+                try {
+                    doc = document.implementation.createHTMLDocument('');
+                    if (/<\/?(html|head|body)[>]*>/gi.test(html))
+                        doc.documentElement.innerHTML = html;
+                    else
+                        doc.body.innerHTML = html;
+
+                } catch (ex2) { /* noop */ }
+
+            if (doc) return doc.body.textContent || doc.body.text || doc.body.innerText;
+
+            // fallback to old method (warnings on mixed content)
+            return $('<div/>')
+                .html(html)
+                .text();
         },
 
         /**
