@@ -4,7 +4,7 @@ define(['jplug/Class'], (Class) => {
      * A module containing utility methods used by other modules.
      * @exports jplug/Utils
      */
-    const Utils = {
+    const Utils = Class.extend({
 
         /**
          * Callback for the map function.
@@ -72,12 +72,16 @@ define(['jplug/Class'], (Class) => {
 
         /**
          * Strip dangerous HTML tags from a string. Also sanitises LTR and RTL text overrides.
-         * @param    {string}  string  string to clean
-         * @returns  {string}  the cleaned string
+         * @param    {string}    string   string to clean
+         * @param    {string[]}  [allow]  array of string for allow tags
+         * @returns  {string}    the cleaned string
          */
-        cleanHTML(string) {
+        cleanHTML(string, allow) {
+            if (!string) return '';
+
             const tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi;
-            const allow = ['blockquote', 'code', 'span', 'div', 'table', 'tr', 'td', 'br', 'br/', 'strong', 'em', 'a'];
+
+            allow = allow || ['blockquote', 'code', 'span', 'div', 'table', 'tr', 'td', 'br', 'br/', 'strong', 'em', 'a'];
 
             // sanitise LTR / TRL overrides
             string = string.split('&#8237;').join('&amp;#8237;');
@@ -89,36 +93,16 @@ define(['jplug/Class'], (Class) => {
         },
 
         /**
-         * Convert HTML string to plaintext. Strips tags and translates HTML entities.
+         * Convert an HTML string into plaintext. Strips tags and decodes HTML entities.
          * @param    {string}  html  HTML to convert
          * @returns  {string}  the plaintext of the HTML
          */
         html2text(html) {
             if (!html) return '';
 
-            let doc;
+            // strip tags
+            html = this.cleanHTML(html, []);
 
-            // use text/html DOMParser
-            try {
-                const parser = new DOMParser();
-
-                doc = parser.parseFromString(html, 'text/html');
-            } catch (ex) { /* noop */ }
-
-            // fallback to document.implementation
-            if (!doc)
-                try {
-                    doc = document.implementation.createHTMLDocument('');
-                    if (/<\/?(html|head|body)[>]*>/gi.test(html))
-                        doc.documentElement.innerHTML = html;
-                    else
-                        doc.body.innerHTML = html;
-
-                } catch (ex2) { /* noop */ }
-
-            if (doc) return doc.body.textContent || doc.body.text || doc.body.innerText;
-
-            // fallback to old method (warnings on mixed content)
             return $('<div/>')
                 .html(html)
                 .text();
@@ -164,8 +148,62 @@ define(['jplug/Class'], (Class) => {
 
                 return a;
             });
-        }
-    };
+        },
 
-    return Utils;
+        /**
+         * Deep merge objects, or arrays.
+         * @param    {object}  target  target object, will be modified and returned
+         * @param    {object}  obj1    object to merge
+         * @param    {object}  [objN]  extra objects to merge
+         * @returns  {object}  the merged object (original target)
+         */
+        merge(target, obj1, ...objN) {
+            const objs = [obj1, ...objN];
+
+            const isArray = Array.isArray(target);
+
+            for (let i = 0; i < objs.length; i++) {
+                const obj = objs[i];
+
+                if (isArray) {
+                    if (Array.isArray(obj))
+                        target = [...target, ...obj];
+
+                    continue;
+                }
+
+                const keys = Object.keys(obj);
+
+                for (let j = 0; j < keys.length; j++) {
+                    const key = keys[j];
+                    const val = obj[key];
+
+                    if (typeof val === 'undefined' || val === null)
+                        continue;
+
+                    if (typeof target[key] === 'undefined' || target[key] === null) {
+                        target[key] = val;
+                        continue;
+                    }
+
+                    if (Array.isArray(val) && Array.isArray(target[key])) {
+                        target[key] = [...target[key], ...val];
+                        continue;
+                    }
+
+                    if ($.isPlainObject(val) && $.isPlainObject(target[key])) {
+                        target[key] = this.merge(target[key], val);
+                        continue;
+                    }
+
+                    // TODO: review if this is the best action to take for merge (maybe require type match)
+                    target[key] = val;
+                }
+            }
+
+            return target;
+        }
+    });
+
+    return new Utils();
 });
